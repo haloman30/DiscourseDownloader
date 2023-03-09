@@ -1,0 +1,11 @@
+; DiscourseDownloader - Website Configuration
+; Developed by haloman30
+
+(website_config)
+s:website_url=https://forums.halowaypoint.com
+i:max_get_more_topics=-1
+b:download_users=true
+
+(cookies)
+s:cookie_name=_t
+s:cookie=
