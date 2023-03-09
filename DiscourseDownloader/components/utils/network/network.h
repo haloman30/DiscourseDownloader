@@ -9,6 +9,8 @@
 */
 namespace DDL::Utils::Network
 {
+	std::string PerformHTTPRequestWithRetries(std::string url, int* http_code = nullptr);
+
 	/**
 	* Performs an HTTP request and stores the output.
 	* 

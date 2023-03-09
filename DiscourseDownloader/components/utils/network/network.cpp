@@ -7,9 +7,45 @@
 #include "components/3rdparty/curlpp/Options.hpp"
 #include "components/3rdparty/curlpp/Infos.hpp"
 
+#include "components/settings/settings.h"
 #include "components/utils/string/string.h"
 #include "components/diagnostics/logger/logger.h"
 #include "main.h"
+
+std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, int* http_code)
+{
+	int max_retries = 60;
+	{
+		WebsiteConfig* config = DDL::Settings::GetSiteConfig();
+
+		if (config)
+		{
+			max_retries = config->max_http_retries;
+		}
+	}
+
+	std::string response = DDL::Utils::Network::PerformHTTPRequest(url, http_code);
+
+	// If we get an invalid response, retry as many times as specified in config or until a successful response
+	{
+		int retries = 0;
+
+		while (*http_code != 200)
+		{
+			// warn about retrying
+			response = DDL::Utils::Network::PerformHTTPRequest(url, http_code);
+			retries++;
+
+			if (retries >= max_retries && max_retries != -1)
+			{
+				// retry limit reached, abort
+				break;
+			}
+		}
+	}
+
+	return response;
+}
 
 std::string DDL::Utils::Network::PerformHTTPRequest(std::string url, int* http_code)
 {
@@ -24,6 +60,7 @@ std::string DDL::Utils::Network::PerformHTTPRequest(std::string url, float backo
 	{
 		request.setOpt<curlpp::options::Url>(url);
 		request.setOpt<curlpp::options::UserAgent>("DiscourseDL v" + std::string(DISCOURSEDL_VERSION));
+		request.setOpt<curlpp::options::SslVerifyPeer>(false);
 	}
 
 	float next_attempt_delay = 0.0f;

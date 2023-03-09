@@ -103,9 +103,13 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Platform)\$(Configuration)\lib;$(SolutionDir)_lib\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Platform)\$(Configuration);$(SolutionDir)_lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libcurl.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "$(ProjectDir)_data" "$(TargetDir)" /s /i /y /d
+XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -124,9 +128,13 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Platform)\$(Configuration)\lib;$(SolutionDir)_lib\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Platform)\$(Configuration);$(SolutionDir)_lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libcurl.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "$(ProjectDir)_data" "$(TargetDir)" /s /i /y /d
+XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -141,9 +149,13 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Platform)\$(Configuration)\lib;$(SolutionDir)_lib\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Platform)\$(Configuration);$(SolutionDir)_lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libcurl.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "$(ProjectDir)_data" "$(TargetDir)" /s /i /y /d
+XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -162,9 +174,13 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Platform)\$(Configuration)\lib;$(SolutionDir)_lib\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Platform)\$(Configuration);$(SolutionDir)_lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libcurl.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "$(ProjectDir)_data" "$(TargetDir)" /s /i /y /d
+XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="components\3rdparty\curlpp\Easy.inl" />
@@ -195,6 +211,8 @@
     <ClCompile Include="components\diagnostics\logger\DBSLogMessage.cpp" />
     <ClCompile Include="components\diagnostics\logger\logger.cpp" />
     <ClCompile Include="components\diagnostics\logger\utils.cpp" />
+    <ClCompile Include="components\discourse\download.cpp" />
+    <ClCompile Include="components\discourse\html_builder.cpp" />
     <ClCompile Include="components\settings\config\BlamColor.cpp" />
     <ClCompile Include="components\settings\config\BlamConfigurationFile.cpp" />
     <ClCompile Include="components\settings\config\BlamConfigurationSection.cpp" />
@@ -267,6 +285,7 @@
     <ClInclude Include="components\3rdparty\utilspp\clone_ptr.hpp" />
     <ClInclude Include="components\diagnostics\errors\errors.h" />
     <ClInclude Include="components\diagnostics\logger\logger.h" />
+    <ClInclude Include="components\discourse\discourse.h" />
     <ClInclude Include="components\settings\config\BlamColor.h" />
     <ClInclude Include="components\settings\config\config.h" />
     <ClInclude Include="components\settings\settings.h" />

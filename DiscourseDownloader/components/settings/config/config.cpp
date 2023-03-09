@@ -44,8 +44,8 @@ DDLResult DDL::Settings::Config::LoadConfiguration(std::string filename, std::st
 		}
 		else
 		{
-			DDL::Logger::LogEvent("cannot load user configuration file '" + filename + "' - file not found, creating new empty config");
-			DDL::Utils::IO::CreateNewFile(filename, "");
+			DDL::Logger::LogEvent("cannot load user configuration file '" + filename + "' - file not found, creating new config");
+			DDL::Utils::IO::CreateNewFile(filename, DDL::Utils::IO::GetFileContentsAsString(defaults_filename));
 		}
 	}
 

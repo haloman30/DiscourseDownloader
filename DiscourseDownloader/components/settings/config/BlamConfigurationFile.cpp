@@ -341,6 +341,8 @@ void BlamConfigurationFile::Save()
 					}
 				}
 
+				write_to_file = true;
+
 				if (write_to_file)
 				{
 					if (setting->type != BlamConfigurationSettingType::Comment)

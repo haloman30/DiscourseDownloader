@@ -13,7 +13,7 @@
 #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
 #endif
 
-#include <sys/stat.h>
+#include <direct.h>
 #include <fstream>
 #include <filesystem>
 
@@ -141,4 +141,35 @@ bool DDL::Utils::IO::ReadBinaryFile(std::string path, void* data, int64_t* size)
 		file.close();
 		return false;
 	}
+}
+
+void DDL::Utils::IO::ValidatePath(std::string path)
+{
+	std::vector<std::string> path_elements = DDL::Utils::String::Split(NormalizePath(path), "/");
+
+	std::string root = "";
+
+	for (int i = 0; i < path_elements.size(); i++)
+	{
+		std::string path = root + path_elements.at(i);
+		_mkdir(path.c_str());
+		root = path + "/";
+	}
+}
+
+std::string DDL::Utils::IO::NormalizePath(std::string path)
+{
+	std::string path_normalized = path;
+
+	path_normalized = DDL::Utils::String::Replace(path_normalized, "\\", "/");
+	path_normalized = DDL::Utils::String::Replace(path_normalized, "../", "@@@_UP_ONE_LEVEL_@@@");
+	path_normalized = DDL::Utils::String::Replace(path_normalized, "./", "/");
+	path_normalized = DDL::Utils::String::Replace(path_normalized, "@@@_UP_ONE_LEVEL_@@@", "../");
+
+	if (path_normalized.starts_with("/"))
+	{
+		path_normalized = "." + path_normalized;
+	}
+
+	return path_normalized;
 }

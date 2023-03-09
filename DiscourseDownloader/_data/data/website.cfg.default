@@ -1,10 +1,19 @@
 ; DiscourseDownloader - Website Configuration
 ; Developed by haloman30
+; -------
+; See <DOC_URL> for more information on how these settings work.
 
 (website_config)
 s:website_url=https://forums.halowaypoint.com
 i:max_get_more_topics=-1
 b:download_users=true
+b:perform_html_build=false
+b:skip_download=false
+i:max_http_retries=60
+
+(paths)
+s:html_dir=./export/
+s:json_dir=./json/
 
 (cookies)
 s:cookie_name=_t

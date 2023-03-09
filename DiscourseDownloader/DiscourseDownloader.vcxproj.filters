@@ -125,6 +125,12 @@
     <ClCompile Include="components\settings\config\BlamColor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="components\discourse\download.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="components\discourse\html_builder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="components\3rdparty\curlpp\internal\CurlHandle.hpp">
@@ -326,6 +332,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="components\settings\config\BlamColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="components\discourse\discourse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

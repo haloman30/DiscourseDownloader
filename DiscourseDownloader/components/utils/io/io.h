@@ -52,7 +52,7 @@ namespace DDL::Utils::IO
 	* @param data - Address to write data to.
 	* @param size - Pointer of the size of the resource.
 	*
-	* @returns `S_OK` if the file was read without error, `E_FAIL` if the file could not be read.
+	* @returns `true` if the file was read without error, `false` if the file could not be read.
 	*/
 	bool ReadBinaryFile(std::string path, void* data, int64_t* size);
 
@@ -74,4 +74,26 @@ namespace DDL::Utils::IO
 	* @returns The file contents, represented as a string.
 	*/
 	std::string GetFileContentsAsString(std::string path);
+
+	/**
+	* Validates that the specified path exists.
+	*
+	* The path can be any relative or absolute path. The function will automatically create any and all
+	* required subdirectories to ensure that the path can be written to.
+	*
+	* @param path - The path to validate.
+	*/
+	void ValidatePath(std::string path);
+
+	/**
+	* Normalizes a path string.
+	*
+	* This function will take a file path, and ensure it is consistent prior to being interpreted by other
+	* code within the application. Primarily, it will replace `\\` with `/`.
+	*
+	* @param path - The path to normalize.
+	*
+	* @returns The normalized file path.
+	*/
+	std::string NormalizePath(std::string path);
 }

@@ -8,9 +8,15 @@
 
 struct WebsiteConfig
 {
-    std::string website_url = "";
+    std::string website_url = "https://my-discourse";
     int max_get_more_topics = -1;
     bool download_users = true;
+    bool perform_html_build = false;
+    bool skip_download = false;
+    int max_http_retries = 60;
+
+    std::string html_path = "./export/";
+    std::string json_path = "./json/";
 
     std::string cookie_name = "_t";
     std::string cookie = "";
