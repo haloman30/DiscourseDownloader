@@ -349,5 +349,8 @@
     <ClInclude Include="components\utils\converters\converters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="components\3rdparty\termcolor\termcolor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

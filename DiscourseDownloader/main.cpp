@@ -66,6 +66,13 @@ int main(int args_count, char* args[])
 		return -1;
 	}
 
+	if (config->log_level_debug)
+	{
+		DDL::Logger::LogEvent("log level debug :: info", DDLLogLevel::Info);
+		DDL::Logger::LogEvent("log level debug :: warning", DDLLogLevel::Warning);
+		DDL::Logger::LogEvent("log level debug :: error", DDLLogLevel::Error);
+	}
+
 	if (!config->skip_download)
 	{
 		DDL::Discourse::DownloadWebContent();
@@ -83,6 +90,8 @@ int main(int args_count, char* args[])
 	{
 		DDL::Logger::LogEvent("skipping html build step based on configuration");
 	}
+
+	DDL::Logger::LogEvent("######################### DOWNLOAD COMPLETE #########################");
 
 	if (!config->disable_long_finish_message)
 	{

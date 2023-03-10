@@ -10,6 +10,8 @@ b:download_users=true
 b:perform_html_build=false
 b:skip_download=false
 i:max_http_retries=60
+b:http_retry_use_backoff=true
+i:http_backoff_increment=5
 i:max_posts_per_request=20
 i:topic_url_collection_notify_interval=15
 b:sanity_check_on_finish=true
@@ -23,6 +25,8 @@ b:download_skip_existing_topics=false
 b:download_skip_existing_posts=true
 b:override_user_agent=false
 s:user_agent=
+b:strict_topic_count_checks=false
+i:request_retry_delay=5
 
 (paths)
 s:html_dir=export/
@@ -35,3 +39,4 @@ s:cookie=
 
 (misc)
 b:disable_long_finish_message=false
+b:log_level_debug=false

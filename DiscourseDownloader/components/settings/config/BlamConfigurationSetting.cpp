@@ -193,7 +193,11 @@ std::string* BlamConfigurationSetting::AsString()
 {
 	if (type != BlamConfigurationSettingType::String)
 	{
-		DDL::Logger::LogEvent("accessing non-string configuration setting '" + id + "' as string, consider accessing as the proper type", DDLLogLevel::Warning);
+		if (CONFIG_DEBUG)
+		{
+			DDL::Logger::LogEvent("accessing non-string configuration setting '"
+				+ id + "' as string, consider accessing as the proper type", DDLLogLevel::Warning);
+		}
 	}
 
 	return &value;

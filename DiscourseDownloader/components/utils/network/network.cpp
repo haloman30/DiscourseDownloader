@@ -14,6 +14,9 @@
 
 std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, int* http_code)
 {
+	bool retry_backoff = true;
+	int backoff_increment = 5;
+	int retry_delay = 1;
 	int max_retries = 60;
 	{
 		WebsiteConfig* config = DDL::Settings::GetSiteConfig();
@@ -21,6 +24,9 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 		if (config)
 		{
 			max_retries = config->max_http_retries;
+			retry_delay = config->request_retry_delay;
+			retry_backoff = config->http_retry_use_backoff;
+			backoff_increment = config->http_backoff_increment;
 		}
 	}
 
@@ -29,16 +35,27 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 	// If we get an invalid response, retry as many times as specified in config or until a successful response
 	{
 		int retries = 0;
+		int next_retry_backoff_delay = retry_delay;
 
 		while (*http_code != 200)
 		{
+			if (retry_backoff)
+			{
+				next_retry_backoff_delay = backoff_increment * (retries + 1);
+			}
+
+			DDL::Logger::LogEvent("network request returned http " + std::to_string(*http_code)
+				+ ", retrying in " + std::to_string(next_retry_backoff_delay) + "s (" + std::to_string(retries) + "/" + std::to_string(max_retries) + ")", DDLLogLevel::Warning);
+
+			Sleep(1000 * next_retry_backoff_delay);
+
 			// warn about retrying
 			response = DDL::Utils::Network::PerformHTTPRequest(url, http_code);
 			retries++;
 
 			if (retries >= max_retries && max_retries != -1)
 			{
-				// retry limit reached, abort
+				DDL::Logger::LogEvent("retry limit reached - returning failed response", DDLLogLevel::Warning);
 				break;
 			}
 		}

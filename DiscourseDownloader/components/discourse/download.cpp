@@ -233,7 +233,24 @@ DDLResult download_category_topics(DiscourseCategory* category, std::vector<std:
 					}
 				}
 
-				if (collected_post_count != reported_post_count)
+				bool post_count_mismatch = false;
+
+				if (config->strict_topic_count_checks)
+				{
+					if (collected_post_count != reported_post_count)
+					{
+						post_count_mismatch = true;
+					}
+				}
+				else
+				{
+					if (collected_post_count < reported_post_count)
+					{
+						post_count_mismatch = true;
+					}
+				}
+
+				if (post_count_mismatch)
 				{
 					DDL::Logger::LogEvent("collected post count does not match topic reported post count, some posts may be missed!", DDLLogLevel::Warning);
 					DDL::Logger::LogEvent("- collected            : " + std::to_string(collected_post_count), DDLLogLevel::Warning);
@@ -466,7 +483,24 @@ DDLResult download_category(DiscourseCategory* category)
 		DDL::Logger::LogEvent("finished topic url list for category " + std::to_string(category->category_id)
 			+ ", collected " + std::to_string(topic_urls.size()) + " topics");
 
-		if (topic_urls.size() != (*category->json_file)["topic_count"].GetInt())
+		bool topic_count_mismatch = false;
+
+		if (config->strict_topic_count_checks)
+		{
+			if (topic_urls.size() != (*category->json_file)["topic_count"].GetInt())
+			{
+				topic_count_mismatch = true;
+			}
+		}
+		else
+		{
+			if (topic_urls.size() < (*category->json_file)["topic_count"].GetInt())
+			{
+				topic_count_mismatch = true;
+			}
+		}
+
+		if (topic_count_mismatch)
 		{
 			DDL::Logger::LogEvent("collected url count does not match topic_count from category json, some topics may be missed!", DDLLogLevel::Warning);
 			DDL::Logger::LogEvent("- url count   : " + std::to_string(topic_urls.size()), DDLLogLevel::Warning);
@@ -657,7 +691,24 @@ void DDL::Discourse::DownloadWebContent()
 				}
 			}
 
-			if (saved_topic_count != reported_topic_count)
+			bool topic_count_mismatch = false;
+
+			if (config->strict_topic_count_checks)
+			{
+				if (saved_topic_count != reported_topic_count)
+				{
+					topic_count_mismatch = true;
+				}
+			}
+			else
+			{
+				if (saved_topic_count < reported_topic_count)
+				{
+					topic_count_mismatch = true;
+				}
+			}
+
+			if (topic_count_mismatch)
 			{
 				category_status = false;
 			}
@@ -726,7 +777,24 @@ void DDL::Discourse::DownloadWebContent()
 					redownload_categories.push_back(category);
 				}
 
-				if (category->topics.size() != (*category->json_file)["topic_count"].GetInt())
+				bool topic_count_mismatch = false;
+
+				if (config->strict_topic_count_checks)
+				{
+					if (category->topics.size() != (*category->json_file)["topic_count"].GetInt())
+					{
+						topic_count_mismatch = true;
+					}
+				}
+				else
+				{
+					if (category->topics.size() < (*category->json_file)["topic_count"].GetInt())
+					{
+						topic_count_mismatch = true;
+					}
+				}
+
+				if (topic_count_mismatch)
 				{
 					DDL::Logger::LogEvent("category " + std::to_string(category->category_id) + " has a topic count mismatch, category will "
 						"NOT be redownloaded automatically but you may want to using the category id whitelist options in website.cfg:", DDLLogLevel::Warning);
@@ -772,7 +840,24 @@ void DDL::Discourse::DownloadWebContent()
 						total_missing_posts += (*topic->json_file)["posts_count"].GetInt();
 					}
 
-					if (topic->posts.size() != (*topic->json_file)["posts_count"].GetInt())
+					bool post_count_mismatch = false;
+
+					if (config->strict_topic_count_checks)
+					{
+						if (topic->posts.size() != (*topic->json_file)["posts_count"].GetInt())
+						{
+							post_count_mismatch = true;
+						}
+					}
+					else
+					{
+						if (topic->posts.size() < (*topic->json_file)["posts_count"].GetInt())
+						{
+							post_count_mismatch = true;
+						}
+					}
+
+					if (post_count_mismatch)
 					{
 						DDL::Logger::LogEvent("topic " + std::to_string(topic->topic_id)
 							+ " has a post count mismatch, topic will be redownloaded:", DDLLogLevel::Warning);

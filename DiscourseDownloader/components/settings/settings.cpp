@@ -38,6 +38,9 @@ bool DDL::Settings::LoadAllConfigurations()
 	ddl_website_config.download_users = *site_config->GetBool("website_config", "download_users");
 	ddl_website_config.perform_html_build = *site_config->GetBool("website_config", "perform_html_build");
 	ddl_website_config.skip_download = *site_config->GetBool("website_config", "skip_download");
+	ddl_website_config.max_http_retries = *site_config->GetInt("website_config", "max_http_retries");
+	ddl_website_config.http_retry_use_backoff = *site_config->GetBool("website_config", "http_retry_use_backoff");
+	ddl_website_config.http_backoff_increment = *site_config->GetInt("website_config", "http_backoff_increment");
 	ddl_website_config.max_posts_per_request = *site_config->GetInt("website_config", "max_posts_per_request");
 	ddl_website_config.topic_url_collection_notify_interval = *site_config->GetInt("website_config", "topic_url_collection_notify_interval");
 	ddl_website_config.sanity_check_on_finish = *site_config->GetBool("website_config", "sanity_check_on_finish");
@@ -51,6 +54,8 @@ bool DDL::Settings::LoadAllConfigurations()
 	ddl_website_config.download_skip_existing_posts = *site_config->GetBool("website_config", "download_skip_existing_posts");
 	ddl_website_config.override_user_agent = *site_config->GetBool("website_config", "override_user_agent");
 	ddl_website_config.user_agent = *site_config->GetString("website_config", "user_agent");
+	ddl_website_config.strict_topic_count_checks = *site_config->GetBool("website_config", "strict_topic_count_checks");
+	ddl_website_config.request_retry_delay = *site_config->GetInt("website_config", "request_retry_delay");
 
 	ddl_website_config.html_path = *site_config->GetString("paths", "html_dir");
 	ddl_website_config.json_path = *site_config->GetString("paths", "json_dir");
@@ -60,6 +65,7 @@ bool DDL::Settings::LoadAllConfigurations()
 	ddl_website_config.cookie = *site_config->GetString("cookies", "cookie");
 
 	ddl_website_config.disable_long_finish_message = *site_config->GetBool("misc", "disable_long_finish_message");
+	ddl_website_config.log_level_debug = *site_config->GetBool("misc", "log_level_debug");
 
 	// Perform any required alterations to config settings
 	{

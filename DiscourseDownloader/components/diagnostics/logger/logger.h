@@ -5,10 +5,33 @@
 
 #include "components/diagnostics/errors/errors.h"
 
-#define CONSOLE_COLOR_RESET std::string("\033[0m")
-#define CONSOLE_COLOR_RED std::string("\033[1;31m")
-#define CONSOLE_COLOR_YELLOW std::string("\033[1;33m")
-#define CONSOLE_COLOR_GREEN std::string("\033[1;32m")
+/**
+* Enumerator listing all possible terminal colors.
+*
+* While the BlamBasicLogger does not support terminal output natively, applications which use it may wish to
+* implement more complex terminal formatting - using colors.
+*/
+enum class TerminalColor
+{
+	Black,
+	Blue,
+	Green,
+	Cyan,
+	Red,
+	Magenta,
+	Gold,
+	Gray,
+
+	DarkGray,
+	BrightBlue,
+	BrightGreen,
+	BrightCyan,
+	BrightRed,
+	BrightMagenta,
+	Yellow,
+	White,
+	Reset
+};
 
 /**
 * Enumerator listing possible log levels.
@@ -117,4 +140,21 @@ namespace DDL::Logger
 	* @param log_level - The log level of the new message.
 	*/
 	void LogEvent(std::string message, DDLLogLevel log_level);
+
+	/**
+	* Translates a given DDLLogLevel into the appropriate terminal color.
+	*
+	* @param log_level - The log level to determine a color for.
+	*
+	* @returns The appropriate TerminalColor for the given log level.
+	*/
+	TerminalColor TranslateLogLevelAsColor(DDLLogLevel log_level);
+
+	/**
+	* Prints a message to the standard output.
+	*
+	* @param message - The message to print.
+	* @param color - The terminal color to use for the message.
+	*/
+	void PrintMessageToStdout(std::string message, TerminalColor color);
 }

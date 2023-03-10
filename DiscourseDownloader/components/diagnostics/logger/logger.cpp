@@ -42,20 +42,18 @@ void DDL::Logger::LogEvent(std::string message, DDLLogLevel log_level)
 
 	if (log_level == DDLLogLevel::Info)
 	{
-		formatted_log_message = CONSOLE_COLOR_RESET + formatted_log_message + CONSOLE_COLOR_RESET;
+		DDL::Logger::PrintMessageToStdout(formatted_log_message, TerminalColor::Reset);
 	}
 	else if (log_level == DDLLogLevel::Warning)
 	{
-		formatted_log_message = CONSOLE_COLOR_YELLOW + formatted_log_message + CONSOLE_COLOR_RESET;
+		DDL::Logger::PrintMessageToStdout(formatted_log_message, TerminalColor::Yellow);
 	}
 	else if (log_level == DDLLogLevel::Error)
 	{
-		formatted_log_message = CONSOLE_COLOR_RED + formatted_log_message + CONSOLE_COLOR_RESET;
+		DDL::Logger::PrintMessageToStdout(formatted_log_message, TerminalColor::BrightRed);
 	}
 	else
 	{
-		formatted_log_message = CONSOLE_COLOR_RESET + formatted_log_message + CONSOLE_COLOR_RESET;
+		DDL::Logger::PrintMessageToStdout(formatted_log_message, TerminalColor::Reset);
 	}
-
-	std::cout << formatted_log_message << std::endl;
 }

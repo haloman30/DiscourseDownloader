@@ -15,6 +15,8 @@ struct WebsiteConfig
     bool perform_html_build = false;
     bool skip_download = false;
     int max_http_retries = 60;
+    bool http_retry_use_backoff = true;
+    int http_backoff_increment = 5;
     int max_posts_per_request = 20;
     int topic_url_collection_notify_interval = 15;
     bool sanity_check_on_finish = true;
@@ -29,6 +31,8 @@ struct WebsiteConfig
     bool download_skip_existing_posts = true;
     bool override_user_agent = false;
     std::string user_agent = "";
+    bool strict_topic_count_checks = false;
+    int request_retry_delay = 1;
 
     std::string html_path = "export/";
     std::string json_path = "json/";
@@ -38,6 +42,7 @@ struct WebsiteConfig
     std::string cookie = "";
 
     bool disable_long_finish_message = false;
+    bool log_level_debug = false;
 };
 
 /**
