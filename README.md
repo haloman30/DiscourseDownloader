@@ -1,6 +1,4 @@
-<img src="./_assets/discoursedl.png" height="150">
-
-# DiscourseDownloader
+![DiscourseDownloader](./_assets/discoursedl_logo_large.png)
 
 DiscourseDownloader is an application intended to archive/mirror a Discourse forum as
 completely as possible. This is done by leveraging the Discourse API and preserving
