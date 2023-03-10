@@ -159,3 +159,31 @@ std::string DDL::Utils::String::ConvertBoolToString(bool value)
 	
 	return "false";
 }
+
+bool DDL::Utils::String::StringListContains(std::vector<std::string> list, std::string string)
+{
+	for (std::string list_item : list)
+	{
+		if (list_item == string)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+std::vector<std::string> DDL::Utils::String::RemoveDuplicateStrings(std::vector<std::string> list)
+{
+	std::vector<std::string> pruned_list = std::vector<std::string>();
+
+	for (std::string list_item : list)
+	{
+		if (!StringListContains(pruned_list, list_item))
+		{
+			pruned_list.push_back(list_item);
+		}
+	}
+
+	return pruned_list;
+}

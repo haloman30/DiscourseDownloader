@@ -24,6 +24,13 @@ struct DiscourseCategory
 	std::vector<DiscourseTopic*> topics = std::vector<DiscourseTopic*>();
 };
 
+struct DDLDownloadRetryInfo
+{
+	std::string local_path = "";
+	std::string url = "";
+	int retries = 0;
+};
+
 /**
 * Namespace containing functions for downloading data from a Discourse forum, and building a
 * HTML archive website intended for public viewing.

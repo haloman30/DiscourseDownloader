@@ -87,6 +87,24 @@ bool DDL::Utils::IO::CreateNewFile(std::string filename, std::string file_conten
 	}
 }
 
+bool DDL::Utils::IO::CreateNewFileBinaryMode(std::string filename, std::string file_contents)
+{
+	std::ofstream file = std::ofstream(filename, std::ios::out | std::ios::trunc | std::ios::binary);
+
+	if (!file.bad())
+	{
+		file << file_contents;
+		file.close();
+
+		return true;
+	}
+	else
+	{
+		file.close();
+		return false;
+	}
+}
+
 std::vector<std::string> DDL::Utils::IO::GetFileContentsAsLines(std::string path)
 {
 	std::vector<std::string> file_lines;
@@ -172,4 +190,58 @@ std::string DDL::Utils::IO::NormalizePath(std::string path)
 	}
 
 	return path_normalized;
+}
+
+std::string DDL::Utils::IO::GetFileName(std::string path)
+{
+	std::string filename = "";
+
+	std::string file_path = DDL::Utils::IO::NormalizePath(path);
+
+	if (file_path.ends_with("/"))
+	{
+		file_path.erase(file_path.begin() + file_path.find_last_of('/'));
+	}
+
+	if (DDL::Utils::String::Contains(file_path, "/"))
+	{
+		filename = file_path.substr(file_path.find_last_of('/') + 1);
+	}
+	else
+	{
+		filename = file_path;
+	}
+
+	return filename;
+}
+
+std::string DDL::Utils::IO::GetFileNameWithoutExtension(std::string path)
+{
+	std::string filename = GetFileName(path);
+
+	if (IsFile(path) || !FileExists(path))
+	{
+		filename = filename.substr(0, filename.find_last_of('.'));
+	}
+
+	return filename;
+}
+
+std::string DDL::Utils::IO::GetFileExtension(std::string path)
+{
+	std::string extension = "";
+
+	if (IsFile(path))
+	{
+		path = NormalizePath(path);
+
+		std::string filename = path.substr(path.find_last_of('/'));
+
+		if (DDL::Utils::String::ContainsChar(filename, '.'))
+		{
+			extension = filename.substr(filename.find_last_of('.'));
+		}
+	}
+
+	return extension;
 }

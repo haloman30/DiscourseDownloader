@@ -55,12 +55,15 @@ std::string DDL::Utils::Network::PerformHTTPRequest(std::string url, int* http_c
 std::string DDL::Utils::Network::PerformHTTPRequest(std::string url, float backoff_factor, int max_retries, int* http_code)
 {
 	std::string response = "";
+	std::stringstream response_stream = std::stringstream();
 
 	curlpp::Easy request = curlpp::Easy();
 	{
+		request.setOpt<cURLpp::Options::WriteStream>(&response_stream);
 		request.setOpt<curlpp::options::Url>(url);
 		request.setOpt<curlpp::options::UserAgent>("DiscourseDL v" + std::string(DISCOURSEDL_VERSION));
 		request.setOpt<curlpp::options::SslVerifyPeer>(false);
+		request.setOpt<curlpp::options::FollowLocation>(true);
 	}
 
 	float next_attempt_delay = 0.0f;
@@ -79,8 +82,8 @@ std::string DDL::Utils::Network::PerformHTTPRequest(std::string url, float backo
 
 			int code = curlpp::Infos::ResponseCode::get(request);
 
-			std::stringstream response_stream = std::stringstream();
-			response_stream << request;
+			//std::stringstream response_stream = std::stringstream();
+			//response_stream << request;
 
 			response = response_stream.str();
 

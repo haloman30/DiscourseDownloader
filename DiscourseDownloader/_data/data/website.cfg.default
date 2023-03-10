@@ -10,10 +10,13 @@ b:download_users=true
 b:perform_html_build=false
 b:skip_download=false
 i:max_http_retries=60
+i:max_posts_per_request=20
+i:topic_url_collection_notify_interval=15
 
 (paths)
-s:html_dir=./export/
-s:json_dir=./json/
+s:html_dir=export/
+s:json_dir=json/
+s:site_directory_root=./forums.halowaypoint.com/
 
 (cookies)
 s:cookie_name=_t

@@ -46,6 +46,17 @@ namespace DDL::Utils::IO
 	bool CreateNewFile(std::string filename, std::string file_contents);
 
 	/**
+	* Creates a file with the specified contents, or overwrites an existing file if it already exists.
+	* Identical to CreateNewFile, but with the `std::ios::binary` flag set.
+	*
+	* @param filename - The path to the file to create.
+	* @param file_contents - The contents to write to the file.
+	*
+	* @returns `true` if the file was created successfully, otherwise returns `false`.
+	*/
+	bool CreateNewFileBinaryMode(std::string filename, std::string file_contents);
+
+	/**
 	* Reads a file as raw binary data.
 	*
 	* @param path - The path of the file to read from.
@@ -96,4 +107,40 @@ namespace DDL::Utils::IO
 	* @returns The normalized file path.
 	*/
 	std::string NormalizePath(std::string path);
+
+	/**
+	* Retrieves the name of the file or folder that a given path refers to.
+	*
+	* For instance, using this function on `C:/Windows/explorer.exe` would return `explorer.exe`. Running
+	* this function on `C:/Program Files (x86)/Microsoft Games/Halo` would return `Halo`.
+	*
+	* @param path - The path to retrieve the file name for.
+	*
+	* @returns The file or folder name.
+	*/
+	std::string GetFileName(std::string path);
+
+	/**
+	* Retrieves the name of the file or folder that a given path refers to, excluding the file's extension (if applicable).
+	*
+	* For instance, using this function on `C:/Windows/explorer.exe` would return `explorer`. Running
+	* this function on `C:/Program Files (x86)/Microsoft Games/Halo` would return `Halo`.
+	*
+	* @param path - The path to retrieve the file name for.
+	*
+	* @returns The file or folder name.
+	*/
+	std::string GetFileNameWithoutExtension(std::string path);
+
+	/**
+	* Retrieves the extension of a file.
+	*
+	* For instance, using this function on `C:/Windows/explorer.exe` would return `exe`. Running this
+	* function on a directory or file with no extension would return an empty string.
+	*
+	* @param path - The path to retrieve the extension for.
+	*
+	* @returns The file extension.
+	*/
+	std::string GetFileExtension(std::string path);
 }

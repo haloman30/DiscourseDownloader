@@ -122,4 +122,8 @@ namespace DDL::Utils::String
 	bool MemoryStringCompare(char* address, char* to_compare, int size);
 
 	std::string ConvertBoolToString(bool value);
+
+	bool StringListContains(std::vector<std::string> list, std::string string);
+
+	std::vector<std::string> RemoveDuplicateStrings(std::vector<std::string> list);
 }

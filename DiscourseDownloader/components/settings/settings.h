@@ -14,9 +14,12 @@ struct WebsiteConfig
     bool perform_html_build = false;
     bool skip_download = false;
     int max_http_retries = 60;
+    int max_posts_per_request = 20;
+    int topic_url_collection_notify_interval = 15;
 
-    std::string html_path = "./export/";
-    std::string json_path = "./json/";
+    std::string html_path = "export/";
+    std::string json_path = "json/";
+    std::string site_directory_root = "./my-discourse/";
 
     std::string cookie_name = "_t";
     std::string cookie = "";
