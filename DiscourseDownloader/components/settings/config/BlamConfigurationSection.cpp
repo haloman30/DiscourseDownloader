@@ -42,21 +42,31 @@ void BlamConfigurationSection::AddNewSetting(BlamConfigurationSetting* new_setti
 	}
 	else
 	{
-		DDL::Logger::LogEvent("tried to add duplicate configuration setting '" + new_setting->id + "' to section " + name + " in file '" + filename
-			+ "', value will be updated - this may or may not be what you want", DDLLogLevel::Info);
+		if (CONFIG_DEBUG)
+		{
+			DDL::Logger::LogEvent("tried to add duplicate configuration setting '" + new_setting->id + "' to section " + name + " in file '" + filename
+				+ "', value will be updated - this may or may not be what you want", DDLLogLevel::Info);
+		}
 
 		BlamConfigurationSetting* old_setting = settings.at(new_setting->id);
 
 		if (old_setting->type == new_setting->type)
 		{
-			DDL::Logger::LogEvent("configuration setting '" + new_setting->id + "' in section " + name + " in file '" + filename + "' updated from '"
-				+ *old_setting->GetRawValue() + "' to '" + *new_setting->GetRawValue() + "'", DDLLogLevel::Warning);
+			if (CONFIG_DEBUG)
+			{
+				DDL::Logger::LogEvent("configuration setting '" + new_setting->id + "' in section " + name + " in file '" + filename + "' updated from '"
+					+ *old_setting->GetRawValue() + "' to '" + *new_setting->GetRawValue() + "'", DDLLogLevel::Warning);
+			}
+			
 			old_setting->UpdateValue(*new_setting->GetRawValue());
 		}
 		else
 		{
-			DDL::Logger::LogEvent("tried to update configuration setting '" + new_setting->id + "' in section " + name + " in file '" + filename
-				+ "', but setting types do not match - value will NOT be updated", DDLLogLevel::Warning);
+			if (CONFIG_DEBUG)
+			{
+				DDL::Logger::LogEvent("tried to update configuration setting '" + new_setting->id + "' in section " + name + " in file '" + filename
+					+ "', but setting types do not match - value will NOT be updated", DDLLogLevel::Warning);
+			}
 		}
 	}
 }
@@ -70,7 +80,10 @@ void BlamConfigurationSection::AddNewDefaultSetting(BlamConfigurationSetting* ne
 	}
 	else
 	{
-		DDL::Logger::LogEvent("tried to add duplicate default configuration setting '" + new_setting->id + "' to section " + name + " in file '" + filename + "', setting will NOT be added", DDLLogLevel::Warning);
+		if (CONFIG_DEBUG)
+		{
+			DDL::Logger::LogEvent("tried to add duplicate default configuration setting '" + new_setting->id + "' to section " + name + " in file '" + filename + "', setting will NOT be added", DDLLogLevel::Warning);
+		}
 	}
 }
 
@@ -84,7 +97,10 @@ bool BlamConfigurationSection::HasOption(std::string option)
 	{
 		if (default_settings.contains(option))
 		{
-			DDL::Logger::LogEvent("default setting '" + option + "' does not exist in configuration file, adding from default");
+			if (CONFIG_DEBUG)
+			{
+				DDL::Logger::LogEvent("default setting '" + option + "' does not exist in configuration file, adding from default");
+			}
 
 			BlamConfigurationSetting* new_setting = default_settings.at(option)->Copy();
 			AddNewSetting(new_setting);

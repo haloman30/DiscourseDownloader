@@ -219,6 +219,8 @@ XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
     <ClCompile Include="components\settings\config\BlamConfigurationSetting.cpp" />
     <ClCompile Include="components\settings\config\config.cpp" />
     <ClCompile Include="components\settings\settings.cpp" />
+    <ClCompile Include="components\settings\switches\switches.cpp" />
+    <ClCompile Include="components\utils\converters\converters.cpp" />
     <ClCompile Include="components\utils\datetime\datetime.cpp" />
     <ClCompile Include="components\utils\io\io.cpp" />
     <ClCompile Include="components\utils\json\json.cpp" />
@@ -289,6 +291,8 @@ XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
     <ClInclude Include="components\settings\config\BlamColor.h" />
     <ClInclude Include="components\settings\config\config.h" />
     <ClInclude Include="components\settings\settings.h" />
+    <ClInclude Include="components\settings\switches\switches.h" />
+    <ClInclude Include="components\utils\converters\converters.h" />
     <ClInclude Include="components\utils\datetime\datetime.h" />
     <ClInclude Include="components\utils\io\io.h" />
     <ClInclude Include="components\utils\json\json.h" />

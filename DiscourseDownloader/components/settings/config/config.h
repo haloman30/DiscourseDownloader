@@ -9,6 +9,8 @@
 
 #define CONFIG_DUMMY_SECTION_NAME "#___default"
 
+#define CONFIG_DEBUG DDL::Settings::Config::IsConfigDebugEnabled()
+
 /**
 * Enumerator defining all possible configuration setting types.
 */
@@ -431,4 +433,7 @@ namespace DDL::Settings::Config
 	* @returns #BlamResult::Success_OK if the file was loaded successfully, otherwise returns an error code.
 	*/
 	DDLResult LoadConfiguration(std::string filename, std::string defaults_filename, std::string comment_delimeter, OUT BlamConfigurationFile** file);
+
+	void SetConfigDebugEnabled(bool enabled);
+	bool IsConfigDebugEnabled();
 }

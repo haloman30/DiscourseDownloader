@@ -131,6 +131,12 @@
     <ClCompile Include="components\discourse\html_builder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="components\settings\switches\switches.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utils\converters\converters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="components\3rdparty\curlpp\internal\CurlHandle.hpp">
@@ -335,6 +341,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="components\discourse\discourse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="components\settings\switches\switches.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="components\utils\converters\converters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -79,13 +79,21 @@ DDLResult BlamConfigurationFile::Load(std::string _filename)
 
 						if (sections.contains(new_section_name))
 						{
-							DDL::Logger::LogEvent("closing configuration section " + current_section->name + ", updating values for existing section " + new_section_name);
+							if (CONFIG_DEBUG)
+							{
+								DDL::Logger::LogEvent("closing configuration section " + current_section->name + ", updating values for existing section " + new_section_name);
+							}
+							
 							current_section = sections.at(new_section_name);
 							section_already_exists = true;
 						}
 						else
 						{
-							DDL::Logger::LogEvent("closing configuration section " + current_section->name + ", starting new section " + new_section_name);
+							if (CONFIG_DEBUG)
+							{
+								DDL::Logger::LogEvent("closing configuration section " + current_section->name + ", starting new section " + new_section_name);
+							}
+							
 							current_section = new BlamConfigurationSection(new_section_name, filename);
 							section_already_exists = false;
 						}
@@ -120,7 +128,10 @@ DDLResult BlamConfigurationFile::Load(std::string _filename)
 			AddNewSection(current_section);
 		}
 
-		DDL::Logger::LogEvent("finished loading configuration file '" + filename + "' (" + _filename + ")");
+		if (CONFIG_DEBUG)
+		{
+			DDL::Logger::LogEvent("finished loading configuration file '" + filename + "' (" + _filename + ")");
+		}
 
 		loaded = true;
 
@@ -170,7 +181,11 @@ DDLResult BlamConfigurationFile::LoadDefaults(std::string _filename)
 
 					if (!section_already_exists)
 					{
-						DDL::Logger::LogEvent("configuration section '" + current_section->name + "' does not exist in configuration file, adding from default");
+						if (CONFIG_DEBUG)
+						{
+							DDL::Logger::LogEvent("configuration section '" + current_section->name + "' does not exist in configuration file, adding from default");
+						}
+						
 						AddNewSection(current_section);
 					}
 
@@ -200,7 +215,10 @@ DDLResult BlamConfigurationFile::LoadDefaults(std::string _filename)
 
 					if (!current_section->HasOption(new_default_setting->id))
 					{
-						DDL::Logger::LogEvent("default setting '" + new_default_setting->id + "' does not exist in configuration file, adding from default");
+						if (CONFIG_DEBUG)
+						{
+							DDL::Logger::LogEvent("default setting '" + new_default_setting->id + "' does not exist in configuration file, adding from default");
+						}
 
 						BlamConfigurationSetting* new_setting = new BlamConfigurationSetting(line, line_number, comment_delimeter, filename);
 						current_section->AddNewSetting(new_setting);
@@ -218,7 +236,11 @@ DDLResult BlamConfigurationFile::LoadDefaults(std::string _filename)
 
 	if (!section_already_exists)
 	{
-		DDL::Logger::LogEvent("configuration section '" + current_section->name + "' does not exist in configuration file, adding from default");
+		if (CONFIG_DEBUG)
+		{
+			DDL::Logger::LogEvent("configuration section '" + current_section->name + "' does not exist in configuration file, adding from default");
+		}
+
 		AddNewSection(current_section);
 	}
 
@@ -335,13 +357,15 @@ void BlamConfigurationFile::Save()
 
 						if (!value_modified)
 						{
-							DDL::Logger::LogEvent("configuration setting '" + setting->id + "' in section '" + section->name + "' in file '" + filename + "' will not be saved - setting value has not been changed from default");
+							if (CONFIG_DEBUG)
+							{
+								DDL::Logger::LogEvent("configuration setting '" + setting->id + "' in section '" + section->name + "' in file '" + filename + "' will not be saved - setting value has not been changed from default");
+							}
+							
 							write_to_file = false;
 						}
 					}
 				}
-
-				write_to_file = true;
 
 				if (write_to_file)
 				{

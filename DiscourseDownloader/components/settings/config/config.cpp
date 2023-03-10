@@ -3,6 +3,8 @@
 #include "components/utils/io/io.h"
 #include "components/diagnostics/logger/logger.h"
 
+bool config_debug_enabled = true;
+
 DDLResult DDL::Settings::Config::LoadConfiguration(std::string filename, std::string comment_delimeter, OUT BlamConfigurationFile** file)
 {
 	BlamConfigurationFile* new_file = new BlamConfigurationFile(filename, comment_delimeter);
@@ -59,4 +61,14 @@ DDLResult DDL::Settings::Config::LoadConfiguration(std::string filename, std::st
 	}
 
 	return load_result;
+}
+
+void DDL::Settings::Config::SetConfigDebugEnabled(bool enabled)
+{
+	config_debug_enabled = enabled;
+}
+
+bool DDL::Settings::Config::IsConfigDebugEnabled()
+{
+	return config_debug_enabled;
 }

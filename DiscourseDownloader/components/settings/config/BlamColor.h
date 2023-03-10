@@ -2,12 +2,6 @@
 
 #include <string>
 
-#ifdef STRINGS_EXPORTS
-#define STRINGS_API __declspec(dllexport) 
-#else
-#define STRINGS_API __declspec(dllimport) 
-#endif
-
 typedef unsigned char byte;
 
 /**
@@ -15,7 +9,7 @@ typedef unsigned char byte;
 *
 * Color values range from 0 to 255. To convert to a float-based color, use #Blam::Colors::D2DColorFromBlamColor.
 */
-class STRINGS_API BlamColor
+class BlamColor
 {
 private:
 	byte convert_float_clamped(float f);

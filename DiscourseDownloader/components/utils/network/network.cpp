@@ -61,7 +61,25 @@ std::string DDL::Utils::Network::PerformHTTPRequest(std::string url, float backo
 	{
 		request.setOpt<cURLpp::Options::WriteStream>(&response_stream);
 		request.setOpt<curlpp::options::Url>(url);
-		request.setOpt<curlpp::options::UserAgent>("DiscourseDL v" + std::string(DISCOURSEDL_VERSION));
+
+		WebsiteConfig* config = DDL::Settings::GetSiteConfig();
+
+		if (!config)
+		{
+			request.setOpt<curlpp::options::UserAgent>("DiscourseDL v" + std::string(DISCOURSEDL_VERSION));
+		}
+		else
+		{
+			if (config->override_user_agent)
+			{
+				request.setOpt<curlpp::options::UserAgent>(config->user_agent);
+			}
+			else
+			{
+				request.setOpt<curlpp::options::UserAgent>("DiscourseDL v" + std::string(DISCOURSEDL_VERSION));
+			}
+		}
+		
 		request.setOpt<curlpp::options::SslVerifyPeer>(false);
 		request.setOpt<curlpp::options::FollowLocation>(true);
 	}
@@ -81,9 +99,6 @@ std::string DDL::Utils::Network::PerformHTTPRequest(std::string url, float backo
 			request.perform();
 
 			int code = curlpp::Infos::ResponseCode::get(request);
-
-			//std::stringstream response_stream = std::stringstream();
-			//response_stream << request;
 
 			response = response_stream.str();
 

@@ -6,12 +6,20 @@
 #include "components/3rdparty/rapidjson/document.h"
 #include "components/diagnostics/errors/errors.h"
 
+struct DiscoursePost
+{
+	rapidjson::Document* json_file = nullptr;
+	int post_id = -1;
+};
+
 struct DiscourseTopic
 {
 	rapidjson::Document* json_file = nullptr;
 	std::string request_url = "";
 
 	int topic_id = -1;
+
+	std::vector<DiscoursePost*> posts = std::vector<DiscoursePost*>();
 };
 
 struct DiscourseCategory

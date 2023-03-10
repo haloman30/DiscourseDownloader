@@ -12,6 +12,17 @@ b:skip_download=false
 i:max_http_retries=60
 i:max_posts_per_request=20
 i:topic_url_collection_notify_interval=15
+b:sanity_check_on_finish=true
+b:thorough_sanity_check=false
+b:download_subcategory_topics=false
+b:use_category_id_filter=false
+s:category_id_filter=5,10
+b:use_filter_as_blacklist=false
+b:download_skip_existing_categories=false
+b:download_skip_existing_topics=false
+b:download_skip_existing_posts=true
+b:override_user_agent=false
+s:user_agent=
 
 (paths)
 s:html_dir=export/
@@ -21,3 +32,6 @@ s:site_directory_root=./forums.halowaypoint.com/
 (cookies)
 s:cookie_name=_t
 s:cookie=
+
+(misc)
+b:disable_long_finish_message=false

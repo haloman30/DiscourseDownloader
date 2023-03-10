@@ -2,6 +2,7 @@
 
 #include <string>
 #include <stdint.h>
+#include <vector>
 
 #include "components/diagnostics/errors/errors.h"
 #include "components/settings/config/config.h"
@@ -16,6 +17,18 @@ struct WebsiteConfig
     int max_http_retries = 60;
     int max_posts_per_request = 20;
     int topic_url_collection_notify_interval = 15;
+    bool sanity_check_on_finish = true;
+    bool thorough_sanity_check = false;
+    bool download_subcategory_topics = false;
+    bool use_category_id_filter = false;
+    std::string category_id_filter = "";
+    std::vector<int> category_id_whitelist = std::vector<int>();
+    bool use_filter_as_blacklist = false;
+    bool download_skip_existing_categories = false;
+    bool download_skip_existing_topics = false;
+    bool download_skip_existing_posts = true;
+    bool override_user_agent = false;
+    std::string user_agent = "";
 
     std::string html_path = "export/";
     std::string json_path = "json/";
@@ -23,6 +36,8 @@ struct WebsiteConfig
 
     std::string cookie_name = "_t";
     std::string cookie = "";
+
+    bool disable_long_finish_message = false;
 };
 
 /**

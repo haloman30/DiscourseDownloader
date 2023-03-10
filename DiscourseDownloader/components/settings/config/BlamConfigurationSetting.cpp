@@ -90,7 +90,11 @@ void BlamConfigurationSetting::ParseValue()
 		}
 		case BlamConfigurationSettingType::Comment:
 		{
-			DDL::Logger::LogEvent("configuration setting '" + id + "' appears to be a comment but tried to load as a setting, this should be impossible", DDLLogLevel::Error);
+			if (CONFIG_DEBUG)
+			{
+				DDL::Logger::LogEvent("configuration setting '" + id + "' appears to be a comment but tried to load as a setting, this should be impossible", DDLLogLevel::Error);
+			}
+			
 			valid = false;
 			break;
 		}

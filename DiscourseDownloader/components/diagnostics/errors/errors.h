@@ -18,4 +18,5 @@ enum DDLResult
 	Error_FileNotFound = -3, //!< Indicates the specified file could not be found.
 	Error_NullPointer = -4, //!< Indicates that a required object pointer was `nullptr`.
 	Error_FileInvalid = -5, 
+	Error_IncompleteDownload = -6,
 };
