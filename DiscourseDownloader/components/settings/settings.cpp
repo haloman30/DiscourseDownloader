@@ -56,6 +56,11 @@ bool DDL::Settings::LoadAllConfigurations()
 	ddl_website_config.user_agent = *site_config->GetString("website_config", "user_agent");
 	ddl_website_config.strict_topic_count_checks = *site_config->GetBool("website_config", "strict_topic_count_checks");
 	ddl_website_config.request_retry_delay = *site_config->GetInt("website_config", "request_retry_delay");
+	ddl_website_config.resume_download = *site_config->GetBool("website_config", "resume_download");
+	ddl_website_config.enable_url_caching = *site_config->GetBool("website_config", "enable_url_caching");
+	ddl_website_config.enable_data_caching = *site_config->GetBool("website_config", "enable_data_caching");
+	ddl_website_config.delete_caches_on_finish = *site_config->GetBool("website_config", "delete_caches_on_finish");
+	ddl_website_config.redownload_if_missing_cache = *site_config->GetBool("website_config", "redownload_if_missing_cache");
 
 	ddl_website_config.html_path = *site_config->GetString("paths", "html_dir");
 	ddl_website_config.json_path = *site_config->GetString("paths", "json_dir");

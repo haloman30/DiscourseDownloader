@@ -33,6 +33,11 @@ struct WebsiteConfig
     std::string user_agent = "";
     bool strict_topic_count_checks = false;
     int request_retry_delay = 1;
+    bool resume_download = true;
+    bool enable_url_caching = true;
+    bool enable_data_caching = true;
+    bool delete_caches_on_finish = false;
+    bool redownload_if_missing_cache = false;
 
     std::string html_path = "export/";
     std::string json_path = "json/";

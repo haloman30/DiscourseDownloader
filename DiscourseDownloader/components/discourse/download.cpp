@@ -1,5 +1,7 @@
 #include "discourse.h"
 
+#include <map>
+
 #include "components/3rdparty/rapidjson/document.h"
 
 #include "components/utils/json/json.h"
@@ -8,8 +10,11 @@
 #include "components/utils/io/io.h"
 #include "components/settings/settings.h"
 #include "components/diagnostics/logger/logger.h"
+#include "components/utils/converters/converters.h"
 
 std::vector<DiscourseCategory*> downloaded_categories = std::vector<DiscourseCategory*>();
+DDLResumeInfo download_resume_info = DDLResumeInfo();
+DDLResumeInfo new_resume_file = DDLResumeInfo();
 
 std::string category_list_url_format = "<BASE_URL>/categories.json?include_subcategories=true";
 std::string category_info_url_format = "<BASE_URL>/c/<CAT_ID>/show.json";
@@ -21,6 +26,7 @@ std::string topic_posts_url_format = "<BASE_URL>/t/<TOPIC_ID>/posts.json?";
 std::string user_list_url_format = "<BASE_URL>/directory_items.json?period=all&page=";
 
 std::string json_category_info_path = "<JSON_ROOT>/c/<CAT_ID>/";
+std::string data_cache_entry_format = "<URL>|<TOPIC_ID>|<POST_COUNT>|<POST_IDS>";
 
 //post_ids[]=<POST_ID>
 
@@ -34,18 +40,45 @@ DDLResult download_topic_posts(DiscourseTopic* topic)
 		return DDLResult::Error_NullPointer;
 	}
 
-	if (!topic->json_file)
-	{
-		DDL::Logger::LogEvent("tried to download topics, but topic json document was nullptr - skipping topic", DDLLogLevel::Error);
-		return DDLResult::Error_NullPointer;
-	}
-
 	// trim post stream to remove first 20 items, keep first 20 from topic json
 
 	// if needed, download all remaining posts
 }
 
-DDLResult download_category_topics(DiscourseCategory* category, std::vector<std::string>* topic_url_list)
+void save_resume_file()
+{
+	WebsiteConfig* config = DDL::Settings::GetSiteConfig();
+
+	if (!config)
+	{
+		DDL::Logger::LogEvent("failed to save resume info - could not get website config!", DDLLogLevel::Error);
+		return;
+	}
+
+	std::string resume_file_contents = "";
+	{
+		resume_file_contents += "category_id=" + std::to_string(new_resume_file.category_id) + "\n";
+		resume_file_contents += "last_saved_topic=" + std::to_string(new_resume_file.last_saved_topic) + "\n";
+		resume_file_contents += "last_user_id=" + std::to_string(new_resume_file.last_user_id) + "\n";
+		
+		if (new_resume_file.download_step == DDLResumeInfo::DownloadStep::TOPICS)
+		{
+			resume_file_contents += "download_step=TOPICS";
+		}
+		else if (new_resume_file.download_step == DDLResumeInfo::DownloadStep::USERS)
+		{
+			resume_file_contents += "download_step=USERS";
+		}
+		else
+		{
+			resume_file_contents += "download_step=INVALID";
+		}
+	}
+
+	DDL::Utils::IO::CreateNewFile(config->site_directory_root + "/resume", resume_file_contents);
+}
+
+DDLResult download_category_topics(DiscourseCategory* category, std::map<int, std::string>* topic_url_list)
 {
 	bool incomplete_download = false;
 
@@ -75,6 +108,9 @@ DDLResult download_category_topics(DiscourseCategory* category, std::vector<std:
 		return DDLResult::Error_NullPointer;
 	}
 
+	new_resume_file.download_step = DDLResumeInfo::DownloadStep::TOPICS;
+	new_resume_file.category_id = category->category_id;
+
 	std::string topic_dir_base = json_category_info_path + "topics/";
 	{
 		topic_dir_base = DDL::Utils::String::Replace(topic_dir_base, "<JSON_ROOT>", config->json_path);
@@ -85,9 +121,43 @@ DDLResult download_category_topics(DiscourseCategory* category, std::vector<std:
 
 	int requests_until_next_notify = config->topic_url_collection_notify_interval;
 
-	for (int ti = 0; ti < topic_url_list->size(); ti++)
+	std::map<int, std::string>::iterator it;
+	bool found_resume_starting_point = false;
+	int ti = -1;
+
+	for (it = topic_url_list->begin(); it != topic_url_list->end(); it++)
 	{
-		std::string topic_url = topic_url_list->at(ti);
+		ti++;
+
+		if (download_resume_info.download_step == DDLResumeInfo::DownloadStep::TOPICS)
+		{
+			if (!found_resume_starting_point)
+			{
+				if (category->category_id == download_resume_info.category_id)
+				{
+					if (download_resume_info.last_saved_topic == it->first)
+					{
+						found_resume_starting_point = true;
+						DDL::Logger::LogEvent("resuming topic download in category " + std::to_string(category->category_id)
+							+ " at topic " + std::to_string(it->first));
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else
+				{
+					found_resume_starting_point = true;
+				}
+			}
+		}
+		else
+		{
+			found_resume_starting_point = true;
+		}
+
+		std::string topic_url = it->second;
 
 		int http_code = -1;
 		std::string response = DDL::Utils::Network::PerformHTTPRequestWithRetries(topic_url, &http_code);
@@ -214,14 +284,12 @@ DDLResult download_category_topics(DiscourseCategory* category, std::vector<std:
 
 							DDL::Utils::IO::CreateNewFile(post_directory + std::to_string(post_id) + ".json", post_json_string);
 
-							DiscoursePost* post_data = new DiscoursePost();
-							
-							post_data->json_file = new rapidjson::Document();
-							post_data->json_file->Parse(post_json_string.c_str());
-							post_data->post_id = post_id;
+							rapidjson::Document* post_json_file = new rapidjson::Document();
+							post_json_file->Parse(post_json_string.c_str());
 
-							topic->posts.push_back(post_data);
+							topic->posts.push_back(post_id);
 
+							delete post_json_file;
 							collected_post_count++;
 						}
 					}
@@ -270,21 +338,24 @@ DDLResult download_category_topics(DiscourseCategory* category, std::vector<std:
 
 					DDL::Utils::IO::CreateNewFile(post_directory + std::to_string(post_id) + ".json", post_json_string);
 
-					DiscoursePost* post_data = new DiscoursePost();
+					rapidjson::Document* post_json_file = new rapidjson::Document();
+					post_json_file->Parse(post_json_string.c_str());
 
-					post_data->json_file = new rapidjson::Document();
-					post_data->json_file->Parse(post_json_string.c_str());
-					post_data->post_id = post_id;
+					topic->posts.push_back(post_id);
 
-					topic->posts.push_back(post_data);
+					delete post_json_file;
 				}
 			}
 
-			topic->json_file = topic_json;
 			topic->topic_id = topic_id;
 			topic->request_url = topic_url;
+			topic->posts_count = (*topic_json)["posts_count"].GetInt();
 
 			category->topics.push_back(topic);
+			delete topic_json;
+
+			new_resume_file.last_saved_topic = topic_id;
+			save_resume_file();
 		}
 		else
 		{
@@ -297,8 +368,11 @@ DDLResult download_category_topics(DiscourseCategory* category, std::vector<std:
 
 		if (requests_until_next_notify <= 0)
 		{
-			requests_until_next_notify = config->topic_url_collection_notify_interval;
-			DDL::Logger::LogEvent("saved " + std::to_string(ti) + "/" + std::to_string(topic_url_list->size()) + " topics so far...");
+			if (found_resume_starting_point)
+			{
+				requests_until_next_notify = config->topic_url_collection_notify_interval;
+				DDL::Logger::LogEvent("saved " + std::to_string(ti) + "/" + std::to_string(topic_url_list->size()) + " topics so far...");
+			}
 		}
 	}
 
@@ -387,9 +461,49 @@ DDLResult download_category(DiscourseCategory* category)
 		}
 	}
 
-	std::vector<std::string> topic_urls = std::vector<std::string>();
+	std::map<int, std::string> topic_urls = std::map<int, std::string>();
+	bool needs_url_list_download = true;
 
-	// Build complete topic list
+	if (config->enable_url_caching)
+	{
+		if (DDL::Utils::IO::IsFile(category_directory + "urlcache"))
+		{
+			bool url_cache_valid = true;
+
+			std::vector<std::string> topic_url_items = DDL::Utils::IO::GetFileContentsAsLines(category_directory + "urlcache");
+
+			for (std::string item : topic_url_items)
+			{
+				std::vector<std::string> components = DDL::Utils::String::Split(item, "|");
+
+				if (components.size() != 2)
+				{
+					DDL::Logger::LogEvent("url cache contains an invalid entry - url cache will be ignored (contains more than 2 components)!",
+						DDLLogLevel::Warning);
+					url_cache_valid = false;
+					break;
+				}
+
+				if (!DDL::Converters::IsStringInt(components.at(0)))
+				{
+					DDL::Logger::LogEvent("url cache contains an invalid entry - url cache will be ignored (topic id was invalid)!", DDLLogLevel::Warning);
+					url_cache_valid = false;
+					break;
+				}
+
+				topic_urls.insert(std::pair<int, std::string>(DDL::Converters::StringToInt(components.at(0)), components.at(1)));
+			}
+
+			if (url_cache_valid)
+			{
+				DDL::Logger::LogEvent("successfully loaded " + std::to_string(topic_urls.size()) + " topic urls from urlcache, skipping url fetching");
+				needs_url_list_download = false;
+			}
+		}
+	}
+
+	// Build complete topic list if url cache doesnt exist/isn't enabled
+	if (needs_url_list_download)
 	{
 		DDL::Logger::LogEvent("building topic url list for category " + std::to_string(category->category_id) + ", this may take a while...");
 
@@ -447,9 +561,9 @@ DDLResult download_category(DiscourseCategory* category)
 						topic_info_url = DDL::Utils::String::Replace(topic_info_url, "<TOPIC_ID>", std::to_string(topic_info_json["id"].GetInt()));
 					}
 
-					if (!DDL::Utils::String::StringListContains(topic_urls, topic_info_url))
+					if (!topic_urls.contains(topic_info_json["id"].GetInt()))
 					{
-						topic_urls.push_back(topic_info_url);
+						topic_urls.insert(std::pair<int, std::string>(topic_info_json["id"].GetInt(), topic_info_url));
 					}
 					else
 					{
@@ -508,8 +622,88 @@ DDLResult download_category(DiscourseCategory* category)
 		}
 	}
 
-	// download each topic within category
+	// Write topic URL list to disk to avoid redownloading topic list later
+	if (config->enable_url_caching)
+	{
+		DDL::Logger::LogEvent("saving url cache for category " + std::to_string(category->category_id) + "...");
+
+		std::string url_cache_file_contents = "";
+
+		std::map<int, std::string>::iterator it;
+
+		for (it = topic_urls.begin(); it != topic_urls.end(); it++)
+		{
+			url_cache_file_contents += std::to_string(it->first) + "|" + it->second + "\n";
+		}
+
+		bool cache_result = DDL::Utils::IO::CreateNewFile(category_directory + "urlcache", url_cache_file_contents);
+
+		if (cache_result)
+		{
+			DDL::Logger::LogEvent("url cache save finished");
+		}
+		else
+		{
+			DDL::Logger::LogEvent("failed to save url cache, topic urls will have to be redownloaded again in the case of an interrupted download",
+				DDLLogLevel::Warning);
+		}
+	}
+
 	download_category_topics(category, &topic_urls);
+
+	// Write topic data to disk so we can free up memory
+	if (config->enable_data_caching)
+	{
+		DDL::Logger::LogEvent("saving data cache for category " + std::to_string(category->category_id) + "...");
+
+		std::string data_cache_contents = "";
+
+		for (DiscourseTopic* topic : category->topics)
+		{
+			std::string cache_entry = data_cache_entry_format;
+			
+			cache_entry = DDL::Utils::String::Replace(cache_entry, "<URL>", topic->request_url);
+			cache_entry = DDL::Utils::String::Replace(cache_entry, "<TOPIC_ID>", std::to_string(topic->topic_id));
+			cache_entry = DDL::Utils::String::Replace(cache_entry, "<POST_COUNT>", std::to_string(topic->posts_count));
+
+			std::string post_id_list = "";
+			{
+				for (int post_id : topic->posts)
+				{
+					post_id_list += std::to_string(post_id) + ",";
+				}
+
+				if (post_id_list.ends_with(","))
+				{
+					post_id_list = post_id_list.substr(0, post_id_list.length() - 1);
+				}
+			}
+
+			cache_entry = DDL::Utils::String::Replace(cache_entry, "<POST_IDS>", post_id_list);
+
+			data_cache_contents += cache_entry + "\n";
+		}
+
+		bool cache_result = DDL::Utils::IO::CreateNewFile(category_directory + "datacache", data_cache_contents);
+
+		if (cache_result)
+		{
+			for (DiscourseTopic* topic : category->topics)
+			{
+				topic->posts.clear();
+				delete topic;
+			}
+
+			category->topics.clear();
+
+			DDL::Logger::LogEvent("data cache save finished");
+		}
+		else
+		{
+			DDL::Logger::LogEvent("failed to save data cache - topic data will NOT be unloaded from memory, this could result in high memory usage",
+				DDLLogLevel::Warning);
+		}
+	}
 
 	DDL::Logger::LogEvent("finished downloading category with id '" + std::to_string(category->category_id) + "'");
 
@@ -627,6 +821,208 @@ void add_categories_from_array(rapidjson::GenericArray<false, rapidjson::Value> 
 	}
 }
 
+DDLResumeInfo get_resume_info(bool* result)
+{
+	WebsiteConfig* config = DDL::Settings::GetSiteConfig();
+
+	if (!config)
+	{
+		DDL::Logger::LogEvent("could not get download resume info, configuration file was nullptr - download will NOT be resumed!", DDLLogLevel::Error);
+
+		if (result)
+		{
+			*result = false;
+		}
+
+		return DDLResumeInfo();
+	}
+
+	if (!DDL::Utils::IO::IsFile(config->site_directory_root + "/resume"))
+	{
+		DDL::Logger::LogEvent("could not get download resume info, no resume information found - download will NOT be resumed! "
+			"(note: this is normal when starting a new download)", DDLLogLevel::Warning);
+
+		if (result)
+		{
+			*result = false;
+		}
+
+		return DDLResumeInfo();
+	}
+
+	std::vector<std::string> resume_info_lines = DDL::Utils::IO::GetFileContentsAsLines(config->site_directory_root + "/resume");
+
+	DDLResumeInfo resume_info = DDLResumeInfo();
+
+	for (std::string line : resume_info_lines)
+	{
+		if (line.starts_with("category_id="))
+		{
+			std::string line_value = DDL::Utils::String::Replace(line, "category_id=", "");
+
+			if (DDL::Converters::IsStringInt(line_value))
+			{
+				resume_info.category_id = DDL::Converters::StringToInt(line_value);
+			}
+		}
+		else if (line.starts_with("last_saved_topic="))
+		{
+			std::string line_value = DDL::Utils::String::Replace(line, "last_saved_topic=", "");
+
+			if (DDL::Converters::IsStringInt(line_value))
+			{
+				resume_info.last_saved_topic = DDL::Converters::StringToInt(line_value);
+			}
+		}
+		else if (line.starts_with("last_user_id="))
+		{
+			std::string line_value = DDL::Utils::String::Replace(line, "last_user_id=", "");
+
+			if (DDL::Converters::IsStringInt(line_value))
+			{
+				resume_info.last_user_id = DDL::Converters::StringToInt(line_value);
+			}
+		}
+		else if (line.starts_with("download_step="))
+		{
+			std::string line_value = DDL::Utils::String::Replace(line, "download_step=", "");
+
+			if (DDL::Utils::String::ToLower(line_value) == "topics")
+			{
+				resume_info.download_step = DDLResumeInfo::DownloadStep::TOPICS;
+			}
+			else if (DDL::Utils::String::ToLower(line_value) == "users")
+			{
+				resume_info.download_step = DDLResumeInfo::DownloadStep::USERS;
+			}
+		}
+	}
+
+	if (resume_info.download_step != DDLResumeInfo::DownloadStep::INVALID)
+	{
+		if (resume_info.download_step == DDLResumeInfo::DownloadStep::TOPICS)
+		{
+			if (resume_info.category_id != -1 && resume_info.last_saved_topic)
+			{
+				if (result)
+				{
+					*result = true;
+				}
+
+				return resume_info;
+			}
+		}
+		else if (resume_info.download_step == DDLResumeInfo::DownloadStep::TOPICS)
+		{
+			if (resume_info.last_user_id != -1)
+			{
+				if (result)
+				{
+					*result = true;
+				}
+
+				return resume_info;
+			}
+		}
+	}
+
+	DDL::Logger::LogEvent("!!!!!! could not parse download resume information file - DOWNLOAD WILL BE RESTARTED!", DDLLogLevel::Error);
+	DDL::Logger::LogEvent("!!!!!! you have 10 seconds to abort the application now if you would like to perform additional diagnosis or back up the existing download folder!", DDLLogLevel::Error);
+	Sleep(10 * 1000);
+
+	if (result)
+	{
+		*result = false;
+	}
+
+	return DDLResumeInfo();
+}
+
+void load_category_data_cache(DiscourseCategory* category, WebsiteConfig* config)
+{
+	if (config->enable_data_caching)
+	{
+		DDL::Logger::LogEvent("loading data from cache...");
+
+		std::string cache_path = json_category_info_path + "datacache";
+		{
+			cache_path = DDL::Utils::String::Replace(cache_path, "<JSON_ROOT>", config->json_path);
+			cache_path = DDL::Utils::String::Replace(cache_path, "<CAT_ID>", std::to_string(category->category_id));
+		}
+
+		if (DDL::Utils::IO::IsFile(cache_path))
+		{
+			std::vector<std::string> cache_entries = DDL::Utils::IO::GetFileContentsAsLines(cache_path);
+
+			for (std::string cache_entry : cache_entries)
+			{
+				bool cache_entry_valid = true;
+
+				std::vector<std::string> components = DDL::Utils::String::Split(cache_entry, "|");
+
+				if (components.size() != 4)
+				{
+					cache_entry_valid = false;
+					DDL::Logger::LogEvent("data cache entry has an invalid number of components (expected 4, got "
+						+ std::to_string(components.size()) + ")", DDLLogLevel::Error);
+					continue;
+				}
+
+				if (!DDL::Converters::IsStringInt(components.at(1)) || !DDL::Converters::IsStringInt(components.at(2)))
+				{
+					cache_entry_valid = false;
+					DDL::Logger::LogEvent("data cache entry has an invalid topic id and/or post count", DDLLogLevel::Error);
+					continue;
+				}
+
+				std::vector<int> post_ids = std::vector<int>();
+				std::vector<std::string> post_ids_str = DDL::Utils::String::Split(components.at(3), ",");
+
+				for (std::string post_id_str : post_ids_str)
+				{
+					if (DDL::Converters::IsStringInt(post_id_str))
+					{
+						post_ids.push_back(DDL::Converters::StringToInt(post_id_str));
+					}
+					else
+					{
+						cache_entry_valid = false;
+						DDL::Logger::LogEvent("data cache entry has an invalid post id in post id list", DDLLogLevel::Error);
+					}
+				}
+
+				std::string topic_url = components.at(0);
+				int topic_id = DDL::Converters::StringToInt(components.at(1));
+				int post_count = DDL::Converters::StringToInt(components.at(2));
+
+				if (post_ids.size() != post_count)
+				{
+					cache_entry_valid = false;
+					DDL::Logger::LogEvent("data cache entry has a post count mismatch - reported post count was "
+						+ std::to_string(post_count) + ", post id count was " + std::to_string(post_ids.size()), DDLLogLevel::Error);
+				}
+
+				if (cache_entry_valid)
+				{
+					DiscourseTopic* topic = new DiscourseTopic();
+
+					topic->request_url = topic_url;
+					topic->topic_id = topic_id;
+					topic->posts_count = post_count;
+					topic->posts = post_ids;
+
+					category->topics.push_back(topic);
+				}
+			}
+		}
+		else
+		{
+			DDL::Logger::LogEvent("category " + std::to_string(category->category_id) + " is missing a data cache file, "
+				"category cannot be verified - this may result in an incomplete download!", DDLLogLevel::Error);
+		}
+	}
+}
+
 void DDL::Discourse::DownloadWebContent()
 {
 	WebsiteConfig* config = DDL::Settings::GetSiteConfig();
@@ -655,6 +1051,31 @@ void DDL::Discourse::DownloadWebContent()
 	rapidjson::GenericArray category_list = (*document)["category_list"]["categories"].GetArray();
 	add_categories_from_array(category_list);
 
+	if (config->resume_download)
+	{
+		bool resume_info_result = false;
+		DDLResumeInfo resume_info = get_resume_info(&resume_info_result);
+
+		if (resume_info_result)
+		{
+			DDL::Logger::LogEvent("resuming previous download...");
+
+			download_resume_info = resume_info;
+
+			if (downloaded_categories.size() > 0)
+			{
+				while (downloaded_categories.at(0)->category_id != resume_info.category_id)
+				{
+					DDL::Logger::LogEvent("category " + std::to_string(downloaded_categories.at(0)->category_id)
+						+ " will be skipped as it seems to already be downloaded");
+
+					delete downloaded_categories.at(0);
+					downloaded_categories.erase(downloaded_categories.begin() + 0);
+				}
+			}
+		}
+	}
+
 	for (DiscourseCategory* category : downloaded_categories)
 	{
 		download_category(category);
@@ -673,12 +1094,14 @@ void DDL::Discourse::DownloadWebContent()
 
 			DDL::Logger::LogEvent("checking category " + std::to_string(category->category_id) + "...");
 
+			load_category_data_cache(category, config);
+
 			int saved_topic_count = category->topics.size();
 			int reported_topic_count = (*category->json_file)["topic_count"].GetInt();
 
 			for (DiscourseTopic* topic : category->topics)
 			{
-				int reported_post_count = (*topic->json_file)["posts_count"].GetInt();
+				int reported_post_count = topic->posts_count;
 				int saved_post_count = topic->posts.size();
 
 				if (saved_post_count != reported_post_count)
@@ -751,6 +1174,8 @@ void DDL::Discourse::DownloadWebContent()
 			// go through each topic in each category and verify that each individual post json file exists
 			for (DiscourseCategory* category : downloaded_categories)
 			{
+				load_category_data_cache(category, config);
+
 				std::vector<DiscourseTopic*> redownload_topics = std::vector<DiscourseTopic*>();
 				bool missing_content = false;
 
@@ -837,21 +1262,21 @@ void DDL::Discourse::DownloadWebContent()
 
 						missing_content = true;
 						topic_missing_content = true;
-						total_missing_posts += (*topic->json_file)["posts_count"].GetInt();
+						total_missing_posts += topic->posts_count;
 					}
 
 					bool post_count_mismatch = false;
 
 					if (config->strict_topic_count_checks)
 					{
-						if (topic->posts.size() != (*topic->json_file)["posts_count"].GetInt())
+						if (topic->posts.size() != topic->posts_count)
 						{
 							post_count_mismatch = true;
 						}
 					}
 					else
 					{
-						if (topic->posts.size() < (*topic->json_file)["posts_count"].GetInt())
+						if (topic->posts.size() < topic->posts_count)
 						{
 							post_count_mismatch = true;
 						}
@@ -861,19 +1286,19 @@ void DDL::Discourse::DownloadWebContent()
 					{
 						DDL::Logger::LogEvent("topic " + std::to_string(topic->topic_id)
 							+ " has a post count mismatch, topic will be redownloaded:", DDLLogLevel::Warning);
-						DDL::Logger::LogEvent("- reported post count : " + std::to_string((*topic->json_file)["posts_count"].GetInt()), DDLLogLevel::Warning);
+						DDL::Logger::LogEvent("- reported post count : " + std::to_string(topic->posts_count), DDLLogLevel::Warning);
 						DDL::Logger::LogEvent("- saved post count    : " + std::to_string(topic->posts.size()), DDLLogLevel::Warning);
 
 						missing_content = true;
 						topic_missing_content = true;
 					}
 
-					for (DiscoursePost* post : topic->posts)
+					for (int post_id : topic->posts)
 					{
-						if (!DDL::Utils::IO::IsFile(posts_root + std::to_string(post->post_id) + ".json"))
+						if (!DDL::Utils::IO::IsFile(posts_root + std::to_string(post_id) + ".json"))
 						{
 							DDL::Logger::LogEvent("topic " + std::to_string(topic->topic_id)
-								+ " is missing post " + std::to_string(post->post_id) + ", topic will be redownloaded", DDLLogLevel::Warning);
+								+ " is missing post " + std::to_string(post_id) + ", topic will be redownloaded", DDLLogLevel::Warning);
 
 							missing_content = true;
 							topic_missing_content = true;
@@ -892,11 +1317,11 @@ void DDL::Discourse::DownloadWebContent()
 					DDL::Logger::LogEvent("attempting redownload of " + std::to_string(redownload_topics.size()) + " missing topics in category " + std::to_string(category->category_id)
 						+ ", this may take a while depending on how many topics are missing...");
 
-					std::vector<std::string> redownload_topic_urls = std::vector<std::string>();
+					std::map<int, std::string> redownload_topic_urls = std::map<int, std::string>();
 
 					for (DiscourseTopic* topic : redownload_topics)
 					{
-						redownload_topic_urls.push_back(topic->request_url);
+						redownload_topic_urls.insert(std::pair<int, std::string>(topic->topic_id, topic->request_url));
 					}
 
 					download_category_topics(category, &redownload_topic_urls);
@@ -928,14 +1353,7 @@ void DDL::Discourse::DownloadWebContent()
 		{
 			for (DiscourseTopic* topic : category->topics)
 			{
-				for (DiscoursePost* post : topic->posts)
-				{
-					delete post->json_file;
-					delete post;
-				}
-
 				topic->posts.clear();
-				delete topic->json_file;
 				delete topic;
 			}
 

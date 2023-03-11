@@ -27,6 +27,11 @@ b:override_user_agent=false
 s:user_agent=
 b:strict_topic_count_checks=false
 i:request_retry_delay=5
+b:resume_download=true
+b:enable_url_caching=true
+b:enable_data_caching=true
+b:delete_caches_on_finish=false
+b:redownload_if_missing_cache=false
 
 (paths)
 s:html_dir=export/

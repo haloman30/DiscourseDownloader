@@ -6,20 +6,29 @@
 #include "components/3rdparty/rapidjson/document.h"
 #include "components/diagnostics/errors/errors.h"
 
-struct DiscoursePost
+struct DDLResumeInfo
 {
-	rapidjson::Document* json_file = nullptr;
-	int post_id = -1;
+	enum class DownloadStep
+	{
+		TOPICS,
+		USERS,
+		INVALID
+	};
+
+	int category_id = -1;
+	int last_saved_topic = -1;
+	int last_user_id = -1;
+	DownloadStep download_step = DownloadStep::INVALID;
 };
 
 struct DiscourseTopic
 {
-	rapidjson::Document* json_file = nullptr;
 	std::string request_url = "";
 
 	int topic_id = -1;
+	int posts_count = -1;
 
-	std::vector<DiscoursePost*> posts = std::vector<DiscoursePost*>();
+	std::vector<int> posts = std::vector<int>();
 };
 
 struct DiscourseCategory
