@@ -17,6 +17,9 @@ struct DDLResumeInfo
 
 	int category_id = -1;
 	int last_saved_topic = -1;
+	int topic_first_id = -1;
+	int topic_last_id = -1;
+	int topic_download_index = -1;
 	int last_user_id = -1;
 	DownloadStep download_step = DownloadStep::INVALID;
 };

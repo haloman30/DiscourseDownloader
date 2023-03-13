@@ -59,6 +59,9 @@ void save_resume_file()
 	{
 		resume_file_contents += "category_id=" + std::to_string(new_resume_file.category_id) + "\n";
 		resume_file_contents += "last_saved_topic=" + std::to_string(new_resume_file.last_saved_topic) + "\n";
+		resume_file_contents += "topic_first_id=" + std::to_string(new_resume_file.topic_first_id) + "\n";
+		resume_file_contents += "topic_last_id=" + std::to_string(new_resume_file.topic_last_id) + "\n";
+		resume_file_contents += "topic_download_index=" + std::to_string(new_resume_file.topic_download_index) + "\n";
 		resume_file_contents += "last_user_id=" + std::to_string(new_resume_file.last_user_id) + "\n";
 		
 		if (new_resume_file.download_step == DDLResumeInfo::DownloadStep::TOPICS)
@@ -119,6 +122,9 @@ DDLResult download_category_topics(DiscourseCategory* category, std::map<int, st
 
 	DDL::Utils::IO::ValidatePath(topic_dir_base);
 
+	new_resume_file.topic_first_id = topic_url_list->begin()->first;
+	new_resume_file.topic_last_id = topic_url_list->end()->first;
+
 	int requests_until_next_notify = config->topic_url_collection_notify_interval;
 
 	std::map<int, std::string>::iterator it;
@@ -135,11 +141,26 @@ DDLResult download_category_topics(DiscourseCategory* category, std::map<int, st
 			{
 				if (category->category_id == download_resume_info.category_id)
 				{
-					if (download_resume_info.last_saved_topic == it->first)
+					if (topic_url_list->begin()->first != download_resume_info.topic_first_id ||
+						topic_url_list->end()->first != download_resume_info.topic_last_id)
 					{
 						found_resume_starting_point = true;
-						DDL::Logger::LogEvent("resuming topic download in category " + std::to_string(category->category_id)
-							+ " at topic " + std::to_string(it->first));
+						DDL::Logger::LogEvent("cannot resume topic download, first/last topic ids in status do not match actual url list", DDLLogLevel::Warning);
+					}
+
+					if (ti == download_resume_info.topic_download_index)
+					{
+						found_resume_starting_point = true;
+
+						if (download_resume_info.last_saved_topic == it->first)
+						{
+							DDL::Logger::LogEvent("resuming topic download in category " + std::to_string(category->category_id)
+								+ " at topic " + std::to_string(it->first));
+						}
+						else
+						{
+							DDL::Logger::LogEvent("cannot resume topic download, topic at last saved index does not match real topic id", DDLLogLevel::Warning);
+						}
 					}
 					else
 					{
@@ -354,6 +375,7 @@ DDLResult download_category_topics(DiscourseCategory* category, std::map<int, st
 			category->topics.push_back(topic);
 			delete topic_json;
 
+			new_resume_file.topic_download_index = ti;
 			new_resume_file.last_saved_topic = topic_id;
 			save_resume_file();
 		}
@@ -426,6 +448,8 @@ DDLResult download_category(DiscourseCategory* category)
 			return DDLResult::Success_OK;
 		}
 	}
+
+	new_resume_file.category_id = category->category_id;
 
 	DDL::Utils::IO::ValidatePath(category_directory);
 	DDL::Utils::IO::CreateNewFile(category_directory + "show.json", json_string);
@@ -874,6 +898,33 @@ DDLResumeInfo get_resume_info(bool* result)
 				resume_info.last_saved_topic = DDL::Converters::StringToInt(line_value);
 			}
 		}
+		else if (line.starts_with("topic_first_id="))
+		{
+			std::string line_value = DDL::Utils::String::Replace(line, "topic_first_id=", "");
+
+			if (DDL::Converters::IsStringInt(line_value))
+			{
+				resume_info.topic_first_id = DDL::Converters::StringToInt(line_value);
+			}
+		}
+		else if (line.starts_with("topic_last_id="))
+		{
+			std::string line_value = DDL::Utils::String::Replace(line, "topic_last_id=", "");
+
+			if (DDL::Converters::IsStringInt(line_value))
+			{
+				resume_info.topic_last_id = DDL::Converters::StringToInt(line_value);
+			}
+		}
+		else if (line.starts_with("topic_download_index="))
+		{
+			std::string line_value = DDL::Utils::String::Replace(line, "topic_download_index=", "");
+
+			if (DDL::Converters::IsStringInt(line_value))
+			{
+				resume_info.topic_download_index = DDL::Converters::StringToInt(line_value);
+			}
+		}
 		else if (line.starts_with("last_user_id="))
 		{
 			std::string line_value = DDL::Utils::String::Replace(line, "last_user_id=", "");
@@ -902,7 +953,7 @@ DDLResumeInfo get_resume_info(bool* result)
 	{
 		if (resume_info.download_step == DDLResumeInfo::DownloadStep::TOPICS)
 		{
-			if (resume_info.category_id != -1 && resume_info.last_saved_topic)
+			if (resume_info.category_id != -1 && resume_info.last_saved_topic != -1)
 			{
 				if (result)
 				{
