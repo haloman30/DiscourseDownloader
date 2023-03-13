@@ -2,9 +2,24 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 #include "components/3rdparty/rapidjson/document.h"
 #include "components/diagnostics/errors/errors.h"
+
+#define category_list_url_format std::string("<BASE_URL>/categories.json?include_subcategories=true")
+#define category_info_url_format std::string("<BASE_URL>/c/<CAT_ID>/show.json")
+
+#define topic_list_url_format std::string("<BASE_URL>/c/<CAT_SLUG>/<CAT_ID>.json?page=")
+#define topic_info_url_format std::string("<BASE_URL>/t/<TOPIC_ID>.json")
+#define topic_posts_url_format std::string("<BASE_URL>/t/<TOPIC_ID>/posts.json?")
+
+#define user_list_url_format std::string("<BASE_URL>/directory_items.json?period=all&page=")
+
+#define json_category_info_path std::string("<JSON_ROOT>/c/<CAT_ID>/")
+#define data_cache_entry_format std::string("<URL>|<TOPIC_ID>|<POST_COUNT>|<POST_IDS>")
+
+typedef std::vector<int> topic_post_chunk;
 
 struct DDLResumeInfo
 {
@@ -57,6 +72,16 @@ struct DDLDownloadRetryInfo
 */
 namespace DDL::Discourse
 {
+	namespace Downloader
+	{
+		bool LoadResumeFile();
+		void SaveResumeFile();
+		DDLResumeInfo* GetLastResumeInfo();
+		DDLResumeInfo* GetCurrentResumeInfo();
+		DDLResult DownloadTopics(DiscourseCategory* category, std::map<int, std::string>* topic_url_list);
+		void DownloadCategories();
+	}
+
 	/**
 	* Performs all tasks for downloading web content from the configured Discourse forum.
 	* 

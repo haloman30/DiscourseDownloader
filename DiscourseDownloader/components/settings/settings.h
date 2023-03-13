@@ -9,43 +9,53 @@
 
 struct WebsiteConfig
 {
+    // website_config
     std::string website_url = "https://my-discourse";
-    int max_get_more_topics = -1;
+    std::string site_directory_root = "./my-discourse/";
+    bool skip_download = false;
     bool download_users = true;
     bool perform_html_build = false;
-    bool skip_download = false;
+
+    // networking
     int max_http_retries = 60;
     bool http_retry_use_backoff = true;
     int http_backoff_increment = 5;
-    int max_posts_per_request = 20;
-    int topic_url_collection_notify_interval = 15;
-    bool sanity_check_on_finish = true;
-    bool thorough_sanity_check = false;
-    bool download_subcategory_topics = false;
-    bool use_category_id_filter = false;
-    std::string category_id_filter = "";
-    std::vector<int> category_id_whitelist = std::vector<int>();
-    bool use_filter_as_blacklist = false;
-    bool download_skip_existing_categories = false;
-    bool download_skip_existing_topics = false;
-    bool download_skip_existing_posts = true;
     bool override_user_agent = false;
     std::string user_agent = "";
-    bool strict_topic_count_checks = false;
     int request_retry_delay = 1;
+
+    // download
     bool resume_download = true;
     bool enable_url_caching = true;
     bool enable_data_caching = true;
     bool delete_caches_on_finish = false;
     bool redownload_if_missing_cache = false;
+    bool sanity_check_on_finish = true;
+    bool thorough_sanity_check = true;
+    bool download_skip_existing_categories = false;
+    bool download_skip_existing_topics = false;
+    bool download_skip_existing_posts = true;
 
+    // forums
+    int max_get_more_topics = -1;
+    int max_posts_per_request = 20;
+    int topic_url_collection_notify_interval = 15;
+    bool download_subcategory_topics = false;
+    bool use_category_id_filter = false;
+    std::string category_id_filter = "";
+    std::vector<int> category_id_whitelist = std::vector<int>();
+    bool use_filter_as_blacklist = false;
+    bool strict_topic_count_checks = false;
+    
+    // paths
     std::string html_path = "export/";
     std::string json_path = "json/";
-    std::string site_directory_root = "./my-discourse/";
 
+    // cookies
     std::string cookie_name = "_t";
     std::string cookie = "";
 
+    // misc
     bool disable_long_finish_message = false;
     bool log_level_debug = false;
 };

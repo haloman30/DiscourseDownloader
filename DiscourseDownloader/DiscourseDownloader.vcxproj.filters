@@ -137,6 +137,15 @@
     <ClCompile Include="components\utils\converters\converters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="components\discourse\downloader\topics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="components\discourse\downloader\category.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="components\discourse\downloader\resume_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="components\3rdparty\curlpp\internal\CurlHandle.hpp">

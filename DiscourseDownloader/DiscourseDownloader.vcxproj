@@ -212,6 +212,9 @@ XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
     <ClCompile Include="components\diagnostics\logger\logger.cpp" />
     <ClCompile Include="components\diagnostics\logger\utils.cpp" />
     <ClCompile Include="components\discourse\download.cpp" />
+    <ClCompile Include="components\discourse\downloader\category.cpp" />
+    <ClCompile Include="components\discourse\downloader\resume_data.cpp" />
+    <ClCompile Include="components\discourse\downloader\topics.cpp" />
     <ClCompile Include="components\discourse\html_builder.cpp" />
     <ClCompile Include="components\settings\config\BlamColor.cpp" />
     <ClCompile Include="components\settings\config\BlamConfigurationFile.cpp" />

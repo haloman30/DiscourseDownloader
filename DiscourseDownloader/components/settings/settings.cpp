@@ -33,44 +33,55 @@ bool DDL::Settings::LoadAllConfigurations()
 		return false;
 	}
 
+	// website_config
 	ddl_website_config.website_url = *site_config->GetString("website_config", "website_url");
-	ddl_website_config.max_get_more_topics = *site_config->GetInt("website_config", "max_get_more_topics");
+	ddl_website_config.site_directory_root = *site_config->GetString("website_config", "site_directory_root");
+	ddl_website_config.skip_download = *site_config->GetBool("website_config", "skip_download");
 	ddl_website_config.download_users = *site_config->GetBool("website_config", "download_users");
 	ddl_website_config.perform_html_build = *site_config->GetBool("website_config", "perform_html_build");
-	ddl_website_config.skip_download = *site_config->GetBool("website_config", "skip_download");
-	ddl_website_config.max_http_retries = *site_config->GetInt("website_config", "max_http_retries");
-	ddl_website_config.http_retry_use_backoff = *site_config->GetBool("website_config", "http_retry_use_backoff");
-	ddl_website_config.http_backoff_increment = *site_config->GetInt("website_config", "http_backoff_increment");
-	ddl_website_config.max_posts_per_request = *site_config->GetInt("website_config", "max_posts_per_request");
-	ddl_website_config.topic_url_collection_notify_interval = *site_config->GetInt("website_config", "topic_url_collection_notify_interval");
-	ddl_website_config.sanity_check_on_finish = *site_config->GetBool("website_config", "sanity_check_on_finish");
-	ddl_website_config.thorough_sanity_check = *site_config->GetBool("website_config", "thorough_sanity_check");
-	ddl_website_config.download_subcategory_topics = *site_config->GetBool("website_config", "download_subcategory_topics");
-	ddl_website_config.use_category_id_filter = *site_config->GetBool("website_config", "use_category_id_filter");
-	ddl_website_config.category_id_filter = *site_config->GetString("website_config", "category_id_filter");
-	ddl_website_config.use_filter_as_blacklist = *site_config->GetBool("website_config", "use_filter_as_blacklist");
-	ddl_website_config.download_skip_existing_categories = *site_config->GetBool("website_config", "download_skip_existing_categories");
-	ddl_website_config.download_skip_existing_topics = *site_config->GetBool("website_config", "download_skip_existing_topics");
-	ddl_website_config.download_skip_existing_posts = *site_config->GetBool("website_config", "download_skip_existing_posts");
-	ddl_website_config.override_user_agent = *site_config->GetBool("website_config", "override_user_agent");
-	ddl_website_config.user_agent = *site_config->GetString("website_config", "user_agent");
-	ddl_website_config.strict_topic_count_checks = *site_config->GetBool("website_config", "strict_topic_count_checks");
-	ddl_website_config.request_retry_delay = *site_config->GetInt("website_config", "request_retry_delay");
-	ddl_website_config.resume_download = *site_config->GetBool("website_config", "resume_download");
-	ddl_website_config.enable_url_caching = *site_config->GetBool("website_config", "enable_url_caching");
-	ddl_website_config.enable_data_caching = *site_config->GetBool("website_config", "enable_data_caching");
-	ddl_website_config.delete_caches_on_finish = *site_config->GetBool("website_config", "delete_caches_on_finish");
-	ddl_website_config.redownload_if_missing_cache = *site_config->GetBool("website_config", "redownload_if_missing_cache");
 
+	// networking
+	ddl_website_config.max_http_retries = *site_config->GetInt("networking", "max_http_retries");
+	ddl_website_config.http_retry_use_backoff = *site_config->GetBool("networking", "http_retry_use_backoff");
+	ddl_website_config.http_backoff_increment = *site_config->GetInt("networking", "http_backoff_increment");
+	ddl_website_config.override_user_agent = *site_config->GetBool("networking", "override_user_agent");
+	ddl_website_config.user_agent = *site_config->GetString("networking", "user_agent");
+	ddl_website_config.request_retry_delay = *site_config->GetInt("networking", "request_retry_delay");
+
+	// download
+	ddl_website_config.resume_download = *site_config->GetBool("download", "resume_download");
+	ddl_website_config.enable_url_caching = *site_config->GetBool("download", "enable_url_caching");
+	ddl_website_config.enable_data_caching = *site_config->GetBool("download", "enable_data_caching");
+	ddl_website_config.delete_caches_on_finish = *site_config->GetBool("download", "delete_caches_on_finish");
+	ddl_website_config.redownload_if_missing_cache = *site_config->GetBool("download", "redownload_if_missing_cache");
+	ddl_website_config.sanity_check_on_finish = *site_config->GetBool("download", "sanity_check_on_finish");
+	ddl_website_config.thorough_sanity_check = *site_config->GetBool("download", "thorough_sanity_check");
+	ddl_website_config.download_skip_existing_categories = *site_config->GetBool("download", "download_skip_existing_categories");
+	ddl_website_config.download_skip_existing_topics = *site_config->GetBool("download", "download_skip_existing_topics");
+	ddl_website_config.download_skip_existing_posts = *site_config->GetBool("download", "download_skip_existing_posts");
+
+	// forums
+	ddl_website_config.max_get_more_topics = *site_config->GetInt("forums", "max_get_more_topics");
+	ddl_website_config.max_posts_per_request = *site_config->GetInt("forums", "max_posts_per_request");
+	ddl_website_config.topic_url_collection_notify_interval = *site_config->GetInt("forums", "topic_url_collection_notify_interval");
+	ddl_website_config.download_subcategory_topics = *site_config->GetBool("forums", "download_subcategory_topics");
+	ddl_website_config.use_category_id_filter = *site_config->GetBool("forums", "use_category_id_filter");
+	ddl_website_config.category_id_filter = *site_config->GetString("forums", "category_id_filter");
+	ddl_website_config.use_filter_as_blacklist = *site_config->GetBool("forums", "use_filter_as_blacklist");
+	ddl_website_config.strict_topic_count_checks = *site_config->GetBool("forums", "strict_topic_count_checks");
+
+	// paths
 	ddl_website_config.html_path = *site_config->GetString("paths", "html_dir");
 	ddl_website_config.json_path = *site_config->GetString("paths", "json_dir");
-	ddl_website_config.site_directory_root = *site_config->GetString("paths", "site_directory_root");
-
+	
+	// cookies
 	ddl_website_config.cookie_name = *site_config->GetString("cookies", "cookie_name");
 	ddl_website_config.cookie = *site_config->GetString("cookies", "cookie");
 
+	// misc
 	ddl_website_config.disable_long_finish_message = *site_config->GetBool("misc", "disable_long_finish_message");
 	ddl_website_config.log_level_debug = *site_config->GetBool("misc", "log_level_debug");
+	
 
 	// Perform any required alterations to config settings
 	{
