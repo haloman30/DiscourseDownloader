@@ -54,7 +54,7 @@ DDLResult DDL::Discourse::Downloader::DownloadTopics(DiscourseCategory* category
 	current_resume_info->download_step = DDLResumeInfo::DownloadStep::TOPICS;
 	current_resume_info->category_id = category->category_id;
 
-	std::string topic_dir_base = json_category_info_path + "topics/";
+	std::string topic_dir_base = JSON_CATEGORY_ROOT_FORMAT + "topics/";
 	{
 		topic_dir_base = DDL::Utils::String::Replace(topic_dir_base, "<JSON_ROOT>", config->json_path);
 		topic_dir_base = DDL::Utils::String::Replace(topic_dir_base, "<CAT_ID>", std::to_string(category->category_id));
@@ -162,7 +162,7 @@ DDLResult DDL::Discourse::Downloader::DownloadTopics(DiscourseCategory* category
 			if (topic_post_ids.Size() > 20)
 			{
 				std::string post_chunk_local_base = topic_directory + "chunks/post_chunk_";
-				std::string post_chunk_url_base = topic_posts_url_format;
+				std::string post_chunk_url_base = TOPIC_POSTS_URL_FORMAT;
 				{
 					post_chunk_url_base = DDL::Utils::String::Replace(post_chunk_url_base, "<BASE_URL>", config->website_url);
 					post_chunk_url_base = DDL::Utils::String::Replace(post_chunk_url_base, "<TOPIC_ID>", std::to_string(topic_id));

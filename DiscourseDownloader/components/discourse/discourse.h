@@ -7,17 +7,17 @@
 #include "components/3rdparty/rapidjson/document.h"
 #include "components/diagnostics/errors/errors.h"
 
-#define category_list_url_format std::string("<BASE_URL>/categories.json?include_subcategories=true")
-#define category_info_url_format std::string("<BASE_URL>/c/<CAT_ID>/show.json")
+#define CATEGORY_LIST_URL_FORMAT std::string("<BASE_URL>/categories.json?include_subcategories=true")
+#define CATEGORY_INFO_URL_FORMAT std::string("<BASE_URL>/c/<CAT_ID>/show.json")
 
-#define topic_list_url_format std::string("<BASE_URL>/c/<CAT_SLUG>/<CAT_ID>.json?page=")
-#define topic_info_url_format std::string("<BASE_URL>/t/<TOPIC_ID>.json")
-#define topic_posts_url_format std::string("<BASE_URL>/t/<TOPIC_ID>/posts.json?")
+#define TOPIC_LIST_URL_FORMAT std::string("<BASE_URL>/c/<CAT_SLUG>/<CAT_ID>.json?page=")
+#define TOPIC_INFO_URL_FORMAT std::string("<BASE_URL>/t/<TOPIC_ID>.json")
+#define TOPIC_POSTS_URL_FORMAT std::string("<BASE_URL>/t/<TOPIC_ID>/posts.json?")
 
-#define user_list_url_format std::string("<BASE_URL>/directory_items.json?period=all&page=")
+#define USER_LIST_URL_FORMAT std::string("<BASE_URL>/directory_items.json?period=all&page=")
 
-#define json_category_info_path std::string("<JSON_ROOT>/c/<CAT_ID>/")
-#define data_cache_entry_format std::string("<URL>|<TOPIC_ID>|<POST_COUNT>|<POST_IDS>")
+#define JSON_CATEGORY_ROOT_FORMAT std::string("<JSON_ROOT>/c/<CAT_ID>/")
+#define DATA_CACHE_ENTRY_FORMAT std::string("<URL>|<TOPIC_ID>|<POST_COUNT>|<POST_IDS>")
 
 typedef std::vector<int> topic_post_chunk;
 

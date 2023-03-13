@@ -35,7 +35,7 @@ DDLResult download_category(DiscourseCategory* category)
 	}
 
 	std::string json_string = DDL::Utils::Json::Serialize(category->json_file);
-	std::string category_directory = json_category_info_path;
+	std::string category_directory = JSON_CATEGORY_ROOT_FORMAT;
 	{
 		category_directory = DDL::Utils::String::Replace(category_directory, "<JSON_ROOT>", config->json_path);
 		category_directory = DDL::Utils::String::Replace(category_directory, "<CAT_ID>", std::to_string(category->category_id));
@@ -135,7 +135,7 @@ DDLResult download_category(DiscourseCategory* category)
 	{
 		DDL::Logger::LogEvent("building topic url list for category " + std::to_string(category->category_id) + ", this may take a while...");
 
-		std::string topic_fetch_url_base = topic_list_url_format;
+		std::string topic_fetch_url_base = TOPIC_LIST_URL_FORMAT;
 		{
 			topic_fetch_url_base = DDL::Utils::String::Replace(topic_fetch_url_base, "<BASE_URL>", config->website_url);
 			topic_fetch_url_base = DDL::Utils::String::Replace(topic_fetch_url_base, "<CAT_SLUG>", (*category->json_file)["slug"].GetString());
@@ -183,7 +183,7 @@ DDLResult download_category(DiscourseCategory* category)
 						continue;
 					}
 
-					std::string topic_info_url = topic_info_url_format;
+					std::string topic_info_url = TOPIC_INFO_URL_FORMAT;
 					{
 						topic_info_url = DDL::Utils::String::Replace(topic_info_url, "<BASE_URL>", config->website_url);
 						topic_info_url = DDL::Utils::String::Replace(topic_info_url, "<TOPIC_ID>", std::to_string(topic_info_json["id"].GetInt()));
@@ -288,7 +288,7 @@ DDLResult download_category(DiscourseCategory* category)
 
 		for (DiscourseTopic* topic : category->topics)
 		{
-			std::string cache_entry = data_cache_entry_format;
+			std::string cache_entry = DATA_CACHE_ENTRY_FORMAT;
 
 			cache_entry = DDL::Utils::String::Replace(cache_entry, "<URL>", topic->request_url);
 			cache_entry = DDL::Utils::String::Replace(cache_entry, "<TOPIC_ID>", std::to_string(topic->topic_id));
@@ -408,7 +408,7 @@ void LoadCategoriesFromJSON(rapidjson::GenericArray<false, rapidjson::Value> cat
 		{
 			int http_code = -1;
 
-			std::string category_extra_info_url = category_info_url_format;
+			std::string category_extra_info_url = CATEGORY_INFO_URL_FORMAT;
 			{
 				category_extra_info_url = DDL::Utils::String::Replace(category_extra_info_url, "<BASE_URL>", config->website_url);
 				category_extra_info_url = DDL::Utils::String::Replace(category_extra_info_url, "<CAT_ID>", std::to_string(category->category_id));
@@ -455,7 +455,7 @@ void load_category_data_cache(DiscourseCategory* category, WebsiteConfig* config
 	{
 		DDL::Logger::LogEvent("loading data from cache...");
 
-		std::string cache_path = json_category_info_path + "datacache";
+		std::string cache_path = JSON_CATEGORY_ROOT_FORMAT + "datacache";
 		{
 			cache_path = DDL::Utils::String::Replace(cache_path, "<JSON_ROOT>", config->json_path);
 			cache_path = DDL::Utils::String::Replace(cache_path, "<CAT_ID>", std::to_string(category->category_id));
@@ -544,7 +544,7 @@ void DDL::Discourse::Downloader::DownloadCategories()
 		return;
 	}
 
-	std::string category_list_url = DDL::Utils::String::Replace(category_list_url_format, "<BASE_URL>", config->website_url);
+	std::string category_list_url = DDL::Utils::String::Replace(CATEGORY_LIST_URL_FORMAT, "<BASE_URL>", config->website_url);
 	int http_code = -1;
 
 	std::string category_response = DDL::Utils::Network::PerformHTTPRequestWithRetries(category_list_url, &http_code);
@@ -688,7 +688,7 @@ void DDL::Discourse::Downloader::DownloadCategories()
 				std::vector<DiscourseTopic*> redownload_topics = std::vector<DiscourseTopic*>();
 				bool missing_content = false;
 
-				std::string category_root = json_category_info_path;
+				std::string category_root = JSON_CATEGORY_ROOT_FORMAT;
 				{
 					category_root = DDL::Utils::String::Replace(category_root, "<JSON_ROOT>", config->json_path);
 					category_root = DDL::Utils::String::Replace(category_root, "<CAT_ID>", std::to_string(category->category_id));
