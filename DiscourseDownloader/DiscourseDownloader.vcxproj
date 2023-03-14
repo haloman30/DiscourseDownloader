@@ -214,7 +214,10 @@ XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
     <ClCompile Include="components\discourse\download.cpp" />
     <ClCompile Include="components\discourse\downloader\category.cpp" />
     <ClCompile Include="components\discourse\downloader\resume_data.cpp" />
+    <ClCompile Include="components\discourse\downloader\site.cpp" />
+    <ClCompile Include="components\discourse\downloader\tags.cpp" />
     <ClCompile Include="components\discourse\downloader\topics.cpp" />
+    <ClCompile Include="components\discourse\downloader\users.cpp" />
     <ClCompile Include="components\discourse\html_builder.cpp" />
     <ClCompile Include="components\settings\config\BlamColor.cpp" />
     <ClCompile Include="components\settings\config\BlamConfigurationFile.cpp" />
@@ -300,6 +303,7 @@ XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
     <ClInclude Include="components\utils\datetime\datetime.h" />
     <ClInclude Include="components\utils\io\io.h" />
     <ClInclude Include="components\utils\json\json.h" />
+    <ClInclude Include="components\utils\list\list.h" />
     <ClInclude Include="components\utils\network\network.h" />
     <ClInclude Include="components\utils\string\string.h" />
     <ClInclude Include="main.h" />

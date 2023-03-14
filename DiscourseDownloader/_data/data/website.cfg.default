@@ -1,13 +1,15 @@
 ; DiscourseDownloader - Website Configuration
 ; Developed by haloman30
 ; -------
-; See <DOC_URL> for more information on how these settings work.
+; See https://haloman30.com/projects/discoursedl/docs for more information on how these settings work.
 
 (website_config)
 s:website_url=https://forums.halowaypoint.com
 s:site_directory_root=./forums.halowaypoint.com/
 b:skip_download=false
 b:download_users=true
+b:download_topics=true
+b:download_misc=true
 b:perform_html_build=false
 
 (networking)
@@ -17,6 +19,7 @@ i:http_backoff_increment=5
 b:override_user_agent=false
 s:user_agent=
 i:request_retry_delay=5
+b:fail_on_403=true
 
 (download)
 b:resume_download=true
@@ -39,6 +42,13 @@ b:use_category_id_filter=false
 s:category_id_filter=5,10
 b:use_filter_as_blacklist=false
 b:strict_topic_count_checks=false
+b:download_all_tag_extras=false
+i:max_skipped_topic_urls=100
+
+(users)
+b:download_all_user_actions=true
+b:download_all_avatar_sizes=true
+b:download_private_messages=false
 
 (paths)
 s:html_dir=export/

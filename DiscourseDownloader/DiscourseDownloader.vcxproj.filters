@@ -146,6 +146,15 @@
     <ClCompile Include="components\discourse\downloader\resume_data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="components\discourse\downloader\users.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="components\discourse\downloader\site.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="components\discourse\downloader\tags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="components\3rdparty\curlpp\internal\CurlHandle.hpp">
@@ -359,6 +368,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="components\3rdparty\termcolor\termcolor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="components\utils\list\list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

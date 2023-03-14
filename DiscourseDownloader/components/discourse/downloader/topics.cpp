@@ -7,19 +7,6 @@
 #include "components/utils/string/string.h"
 #include "components/utils/json/json.h"
 
-DDLResult download_topic_posts(DiscourseTopic* topic)
-{
-	if (!topic)
-	{
-		DDL::Logger::LogEvent("tried to download topics, but topic was nullptr - skipping topic", DDLLogLevel::Error);
-		return DDLResult::Error_NullPointer;
-	}
-
-	// trim post stream to remove first 20 items, keep first 20 from topic json
-
-	// if needed, download all remaining posts
-}
-
 DDLResult DDL::Discourse::Downloader::DownloadTopics(DiscourseCategory* category, std::map<int, std::string>* topic_url_list)
 {
 	bool incomplete_download = false;

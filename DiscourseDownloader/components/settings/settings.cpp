@@ -38,6 +38,8 @@ bool DDL::Settings::LoadAllConfigurations()
 	ddl_website_config.site_directory_root = *site_config->GetString("website_config", "site_directory_root");
 	ddl_website_config.skip_download = *site_config->GetBool("website_config", "skip_download");
 	ddl_website_config.download_users = *site_config->GetBool("website_config", "download_users");
+	ddl_website_config.download_topics = *site_config->GetBool("website_config", "download_topics");
+	ddl_website_config.download_misc = *site_config->GetBool("website_config", "download_misc");
 	ddl_website_config.perform_html_build = *site_config->GetBool("website_config", "perform_html_build");
 
 	// networking
@@ -47,6 +49,7 @@ bool DDL::Settings::LoadAllConfigurations()
 	ddl_website_config.override_user_agent = *site_config->GetBool("networking", "override_user_agent");
 	ddl_website_config.user_agent = *site_config->GetString("networking", "user_agent");
 	ddl_website_config.request_retry_delay = *site_config->GetInt("networking", "request_retry_delay");
+	ddl_website_config.fail_on_403 = *site_config->GetBool("networking", "fail_on_403");
 
 	// download
 	ddl_website_config.resume_download = *site_config->GetBool("download", "resume_download");
@@ -69,6 +72,13 @@ bool DDL::Settings::LoadAllConfigurations()
 	ddl_website_config.category_id_filter = *site_config->GetString("forums", "category_id_filter");
 	ddl_website_config.use_filter_as_blacklist = *site_config->GetBool("forums", "use_filter_as_blacklist");
 	ddl_website_config.strict_topic_count_checks = *site_config->GetBool("forums", "strict_topic_count_checks");
+	ddl_website_config.download_all_tag_extras = *site_config->GetBool("forums", "download_all_tag_extras");
+	ddl_website_config.max_skipped_topic_urls = *site_config->GetInt("forums", "max_skipped_topic_urls");
+
+	// users
+	ddl_website_config.download_all_user_actions = *site_config->GetBool("users", "download_all_user_actions");
+	ddl_website_config.download_all_avatar_sizes = *site_config->GetBool("users", "download_all_avatar_sizes");
+	ddl_website_config.download_private_messages = *site_config->GetBool("users", "download_private_messages");
 
 	// paths
 	ddl_website_config.html_path = *site_config->GetString("paths", "html_dir");

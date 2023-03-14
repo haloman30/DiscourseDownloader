@@ -23,4 +23,7 @@ void DDL::Discourse::DownloadWebContent()
 	}
 
 	DDL::Discourse::Downloader::DownloadCategories();
+	DDL::Discourse::Downloader::DownloadUsers();
+	DDL::Discourse::Downloader::DownloadSiteInfo();
+	DDL::Discourse::Downloader::DownloadTags();
 }

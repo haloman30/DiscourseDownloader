@@ -4,6 +4,9 @@ DiscourseDownloader is an application intended to archive/mirror a Discourse for
 completely as possible. This is done by leveraging the Discourse API and preserving
 as much content as possible.
 
+This project is available on both [GitHub](https://github.com/haloman30/DiscourseDownloader)
+ and the [Elaztek Studios Gitlab](https://gitlab.elaztek.com/haloman30/discoursedownloader).
+
 
 ### Development Status
 
@@ -85,8 +88,22 @@ The current progress of the application is as follows:
 
 * [x] JSON Downloader
   * [x] Categories and Topics
-  * [ ] User Profiles
-  * [ ] Miscellaneous Site Information
+    * [x] Categories
+    * [x] Topics
+    * [x] Posts
+    * [x] Category images
+    * [x] Tags
+    * [ ] Tag groups
+  * [x] User Profiles
+    * [x] Profile
+    * [x] Badges
+    * [x] Avatars
+    * [x] User Actions
+    * [ ] Private Messages (will require auth)
+  * [x] Miscellaneous Site Information
+    * [x] Site Info
+    * [x] Groups
+    
 * [ ] HTML Builder
 
 Currently, the application is capable of downloading forum topic and post content in JSON format.

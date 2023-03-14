@@ -18,6 +18,7 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 	int backoff_increment = 5;
 	int retry_delay = 1;
 	int max_retries = 60;
+	bool fail_on_403 = true;
 	{
 		WebsiteConfig* config = DDL::Settings::GetSiteConfig();
 
@@ -27,6 +28,7 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 			retry_delay = config->request_retry_delay;
 			retry_backoff = config->http_retry_use_backoff;
 			backoff_increment = config->http_backoff_increment;
+			fail_on_403 = config->fail_on_403;
 		}
 	}
 
@@ -39,6 +41,13 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 
 		while (*http_code != 200)
 		{
+			if (fail_on_403 && *http_code == 403)
+			{
+				DDL::Logger::LogEvent("stopping further network connection attempts due to http 403 - if you want, you "
+					"can disable this in website.cfg but this could result in a permanent soft-lock of the application", DDLLogLevel::Error);
+				break;
+			}
+
 			if (retry_backoff)
 			{
 				next_retry_backoff_delay = backoff_increment * (retries + 1);

@@ -14,6 +14,8 @@ struct WebsiteConfig
     std::string site_directory_root = "./my-discourse/";
     bool skip_download = false;
     bool download_users = true;
+    bool download_topics = true;
+    bool download_misc = true;
     bool perform_html_build = false;
 
     // networking
@@ -23,6 +25,7 @@ struct WebsiteConfig
     bool override_user_agent = false;
     std::string user_agent = "";
     int request_retry_delay = 1;
+    bool fail_on_403 = true;
 
     // download
     bool resume_download = true;
@@ -46,6 +49,13 @@ struct WebsiteConfig
     std::vector<int> category_id_whitelist = std::vector<int>();
     bool use_filter_as_blacklist = false;
     bool strict_topic_count_checks = false;
+    bool download_all_tag_extras = false;
+    int max_skipped_topic_urls = 100;
+
+    // users
+    bool download_all_user_actions = true;
+    bool download_all_avatar_sizes = true;
+    bool download_private_messages = false;
     
     // paths
     std::string html_path = "export/";

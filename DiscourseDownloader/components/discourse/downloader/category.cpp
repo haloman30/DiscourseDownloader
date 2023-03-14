@@ -149,6 +149,7 @@ DDLResult download_category(DiscourseCategory* category)
 		DDL::Utils::IO::ValidatePath(local_json_dir);
 
 		int requests_until_next_notify = config->topic_url_collection_notify_interval;
+		int remaining_skipped_urls = config->max_skipped_topic_urls;
 
 		while (has_more_topics)
 		{
@@ -180,8 +181,16 @@ DDLResult download_category(DiscourseCategory* category)
 					int topic_category_id = topic_info_json["category_id"].GetInt();
 					if (!config->download_subcategory_topics && topic_category_id != category->category_id)
 					{
+						if (remaining_skipped_urls <= 0)
+						{
+							has_more_topics = false;
+						}
+
+						remaining_skipped_urls--;
 						continue;
 					}
+
+					remaining_skipped_urls = config->max_skipped_topic_urls;
 
 					std::string topic_info_url = TOPIC_INFO_URL_FORMAT;
 					{
@@ -220,6 +229,11 @@ DDLResult download_category(DiscourseCategory* category)
 
 			topic_list_page++;
 			requests_until_next_notify--;
+		}
+
+		if (remaining_skipped_urls <= 0)
+		{
+			DDL::Logger::LogEvent("reached maximum skipped urls limit, skipping future url searches - if this is not what you want please edit website.cfg");
 		}
 
 		DDL::Logger::LogEvent("finished topic url list for category " + std::to_string(category->category_id)
@@ -541,6 +555,13 @@ void DDL::Discourse::Downloader::DownloadCategories()
 	if (!config)
 	{
 		DDL::Logger::LogEvent("could not get website config - forum categories will NOT be downloaded!", DDLLogLevel::Error);
+		return;
+	}
+
+	if (!config->download_topics)
+	{
+		DDL::Logger::LogEvent("forum topic downloading has been disabled in config - if this is not what you want, please edit website.cfg",
+			DDLLogLevel::Warning);
 		return;
 	}
 
