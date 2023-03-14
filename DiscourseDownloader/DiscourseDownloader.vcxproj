@@ -189,6 +189,7 @@ XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
     <None Include="components\3rdparty\curlpp\internal\OptionContainer.inl" />
     <None Include="components\3rdparty\curlpp\internal\OptionSetter.inl" />
     <None Include="components\3rdparty\curlpp\Option.inl" />
+    <None Include="res\Resource.aps" />
     <None Include="_data\data\website.cfg.default" />
     <None Include="_data\templates\main.html" />
     <None Include="_data\templates\topic.html" />
@@ -307,6 +308,14 @@ XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
     <ClInclude Include="components\utils\network\network.h" />
     <ClInclude Include="components\utils\string\string.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="res\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="discoursedl.ico" />
+    <Image Include="res\discoursedl.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

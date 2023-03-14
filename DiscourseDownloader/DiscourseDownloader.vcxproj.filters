@@ -36,6 +36,7 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="_data\data\website.cfg.default" />
+    <None Include="res\Resource.aps" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -373,5 +374,21 @@
     <ClInclude Include="components\utils\list\list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="res\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\Resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\discoursedl.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="discoursedl.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
