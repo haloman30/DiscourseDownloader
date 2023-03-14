@@ -50,6 +50,8 @@ bool DDL::Settings::LoadAllConfigurations()
 	ddl_website_config.user_agent = *site_config->GetString("networking", "user_agent");
 	ddl_website_config.request_retry_delay = *site_config->GetInt("networking", "request_retry_delay");
 	ddl_website_config.fail_on_403 = *site_config->GetBool("networking", "fail_on_403");
+	ddl_website_config.fail_on_404 = *site_config->GetBool("networking", "fail_on_404");
+	ddl_website_config.max_404s = *site_config->GetInt("networking", "max_404s");
 
 	// download
 	ddl_website_config.resume_download = *site_config->GetBool("download", "resume_download");

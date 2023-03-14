@@ -20,6 +20,8 @@ b:override_user_agent=false
 s:user_agent=
 i:request_retry_delay=5
 b:fail_on_403=true
+b:fail_on_404=false
+i:max_404s=5
 
 (download)
 b:resume_download=true

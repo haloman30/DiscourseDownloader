@@ -19,6 +19,8 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 	int retry_delay = 1;
 	int max_retries = 60;
 	bool fail_on_403 = true;
+	bool fail_on_404 = false;
+	int max_404s = 5;
 	{
 		WebsiteConfig* config = DDL::Settings::GetSiteConfig();
 
@@ -29,6 +31,8 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 			retry_backoff = config->http_retry_use_backoff;
 			backoff_increment = config->http_backoff_increment;
 			fail_on_403 = config->fail_on_403;
+			fail_on_404 = config->fail_on_404;
+			max_404s = config->max_404s;
 		}
 	}
 
@@ -38,6 +42,7 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 	{
 		int retries = 0;
 		int next_retry_backoff_delay = retry_delay;
+		int remaining_404s = max_404s;
 
 		while (*http_code != 200)
 		{
@@ -47,6 +52,27 @@ std::string DDL::Utils::Network::PerformHTTPRequestWithRetries(std::string url, 
 					"can disable this in website.cfg but this could result in a permanent soft-lock of the application", DDLLogLevel::Error);
 				break;
 			}
+
+			if (*http_code == 404)
+			{
+				if (fail_on_404)
+				{
+					DDL::Logger::LogEvent("stopping further network connection attempts due to http 404 - if you want, you "
+						"can disable this in website.cfg but this could result in a permanent soft-lock of the application", DDLLogLevel::Error);
+					break;
+				}
+
+				if (remaining_404s <= 0 && max_404s != -1)
+				{
+					DDL::Logger::LogEvent("stopping further retries due to reaching maximum 404 count () - if you want, you"
+						"can increase this amount or set it to -1 to disable this limit in website.cfg", DDLLogLevel::Error);
+					break;
+				}
+
+				remaining_404s--;
+			}
+
+			
 
 			if (retry_backoff)
 			{

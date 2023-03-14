@@ -26,6 +26,8 @@ struct WebsiteConfig
     std::string user_agent = "";
     int request_retry_delay = 1;
     bool fail_on_403 = true;
+    bool fail_on_404 = true;
+    int max_404s = 5;
 
     // download
     bool resume_download = true;

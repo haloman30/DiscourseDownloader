@@ -114,7 +114,12 @@ bool download_avatar(std::string user_local_root, std::string avatar_template, i
 		}
 
 		int http_code = -1;
-		std::string avatar_url = config->website_url + DDL::Utils::String::Replace(avatar_template, "{size}", std::to_string(size));
+		std::string avatar_url = DDL::Utils::String::Replace(avatar_template, "{size}", std::to_string(size));
+
+		if (!avatar_url.starts_with("http://") && !avatar_url.starts_with("ftp://") && !avatar_url.starts_with("https://"))
+		{
+			avatar_url = config->website_url + avatar_url;
+		}
 
 		std::string response = DDL::Utils::Network::PerformHTTPRequestWithRetries(avatar_url, &http_code);
 
@@ -212,6 +217,9 @@ void download_user_list(bool only_download_incomplete)
 			{
 				continue;
 			}
+
+			DDL::Logger::LogEvent("downloading user " + std::to_string(user_id) + " (" + std::to_string(total_downloaded_users)
+				+ "/" + std::to_string(total_user_count) + ")...");
 
 			std::string user_data_root = JSON_USER_ROOT_FORMAT;
 			{
@@ -314,7 +322,6 @@ void download_user_list(bool only_download_incomplete)
 			}
 
 			total_downloaded_users++;
-			DDL::Logger::LogEvent("downloaded user " + std::to_string(user_id) + " (" + std::to_string(total_downloaded_users) + "/" + std::to_string(total_user_count) + ")...");
 		}
 
 		//DDL::Logger::LogEvent("downloading users... (" + std::to_string(total_downloaded_users) + "/"
