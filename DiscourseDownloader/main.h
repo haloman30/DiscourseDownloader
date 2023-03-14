@@ -1,3 +1,3 @@
 #pragma once
 
-#define DISCOURSEDL_VERSION "1.0.0"
+#define DISCOURSEDL_VERSION "a1.0.0"

@@ -387,8 +387,5 @@
     <Image Include="res\discoursedl.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="discoursedl.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>

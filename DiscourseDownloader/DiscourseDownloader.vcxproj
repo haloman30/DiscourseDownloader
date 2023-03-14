@@ -314,7 +314,6 @@ XCOPY "$(SolutionDir)_lib\dll\$(Platform)" "$(TargetDir)" /s /i /y /d</Command>
     <ResourceCompile Include="res\Resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="discoursedl.ico" />
     <Image Include="res\discoursedl.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
