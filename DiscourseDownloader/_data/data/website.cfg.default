@@ -1,7 +1,7 @@
 ; DiscourseDownloader - Website Configuration
 ; Developed by haloman30
 ; -------
-; See https://haloman30.com/projects/discoursedl/docs for more information on how these settings work.
+; See https://haloman30.com/projects/discoursedl/docs/?page=config for more information on how these settings work.
 
 (website_config)
 s:website_url=https://forums.halowaypoint.com

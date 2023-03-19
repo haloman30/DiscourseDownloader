@@ -73,7 +73,7 @@ The general process the downloader goes through is as follows:
    the builder is enabled in the configuration.
 
 Many features of the downloader can be controlled via the `website.cfg` file, which you can read
-more about [here](#).
+more about [here](https://haloman30.com/projects/discoursedl/docs/?page=config).
 
 ##### HTML Builder
 
